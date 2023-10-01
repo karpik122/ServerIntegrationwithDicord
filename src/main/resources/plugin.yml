@@ -1,0 +1,22 @@
+name: ServerIntegrationwithDicord
+version: '${project.version}'
+main: pl.karpik122.ServerIntegrationwithDicord.Main
+api-version: '1.19'
+author: karpik122
+prefix: ServerIntegrationwithDicord
+description: Plugin for minecraft server
+commands:
+  report:
+  discordintegration:
+    permission: serverintegrationwithdicord.admin
+    reload:
+      permission: serverintegrationwithdicord.admin
+    log:
+      permission: serverintegrationwithdicord.admin
+    report:
+      permission: serverintegrationwithdicord.admin
+    token:
+      permission: serverintegrationwithdicord.admin
+permissions:
+  serverintegrationwithdicord.admin:
+    default: false

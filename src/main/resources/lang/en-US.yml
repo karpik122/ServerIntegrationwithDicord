@@ -1,0 +1,73 @@
+#plugin options
+loading: "Loading"
+Log_in_for: "Log in for"
+Plugin_off: "Plugin off"
+Save_game_time: "Game time saved"
+unable_to_check_for_update: "Unable to check for updates:"
+there_is_not_a_new_update: "There is not a new update available."
+there_is_a_new_update: "There is a new update available."
+an_unknown_error: "An unknown error occurred. contact"
+
+#dictionary
+minutes: "minutes"
+there_is_no_such_player: "There is no such player on the server!"
+
+#comands
+command_arguments: "Please provide an argument to the command."
+command_reload: "Reload plugin."
+alltime_description: "Shows the time of all players"
+
+#reload
+you_are_not_authorized: "You are not authorized to use this command"
+reset_message: "The Discord bot has been restarted."
+
+
+#admincommands
+remember_to_restart: "Remember to restart the bot if you set everything up"
+
+changes_saved_successfully: "Changes saved successfully"
+
+admin_command_permission: "You do not have permission to execute this command."
+admin_command_0arg: "Discord Integration Help:"
+admin_command_0arg1: "/discordintegration reload - Reload plugin"
+admin_command_0arg2: "/discordintegration past token <token> - Edit the config.yml file and paste it into TOKEN"
+admin_command_0arg3: "/discordintegration past log <channel id> - Edit config.yml file and paste it into log_id"
+admin_command_0arg4: "/discordintegration past report <channel id> - Edit the config.yml file and paste it into report_channel"
+admin_command_reload: "The Discord Integration plugin has been reloaded."
+admin_command_token_past: "Correct Usage: /discordintegration past token [Discord bot token]"
+admin_command_logid_past: "Correct Usage: /discordintegration past log [Discord channel id]"
+admin_command_report_past: "Correct Usage: /discordintegration past report [Discord channel id]"
+admin_command_token_accept: "The token has been pasted into the config.yml file."
+
+#report
+report_successfully_reported: "Successfully reported player"
+report_report_player: "Player notification"
+report_was_reported_for: "was reported for"
+report_for: "for"
+report_applicant: "Submitted by"
+report_notified: "Reported"
+report_content: "Content"
+report_notification_from: "Notification from"
+report_incorrect_syntax: "Incorrect syntax!"
+report_correct_usage: "Correct usage: /report <player> <content>"
+
+#discord
+discord_playtime: "playtime"
+discord_status: "players on the Minecraft server!"
+
+#playtime
+playtime_has: "has"
+playtime_minutes_on_server: "minutes on the server"
+playtime_hours_on_server: "hours on minecraft server"
+discord_playtime_description: "Check how much time the player has spent on the server"
+discord_playtime_enter_player_name: "Enter Minecraft player nickname"
+playtime_null_player: "There is no such player!"
+#in a single line
+discord_playtime_nick: "nickname_player_minecraft"
+
+#commandlog
+commandlog_use_command: "used the command"
+commandlog_use_log: "Log of command usage"
+commandlog_command_use: "Command used"
+commandlog_command: "Command"
+commandlog_player: "Player"

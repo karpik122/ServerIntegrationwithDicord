@@ -1,0 +1,9 @@
+#Token of your discord bot
+TOKEN: "BOT_TOKEN"
+
+#id of text channel in your server Discord
+report_channel: 'REPORT_CHANNEL_ID'
+id_log_channel: 'LOG_CHANNEL_ID'
+
+# pl-PL, en-US
+language: "en-US"

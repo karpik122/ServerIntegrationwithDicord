@@ -1,0 +1,69 @@
+#plugin options
+loading: "Ładowanie"
+Log_in_for: "Zalogowano jako"
+Plugin_off: "Plugin wyłączony"
+Save_game_time: "Zapisano czas gry"
+unable_to_check_for_update: "Nie można sprawdzić dostępności aktualizacji"
+there_is_not_a_new_update: "Nie ma dostępnej nowej aktualizacji."
+there_is_a_new_update: "Dostępna jest nowa aktualizacja."
+an_unknown_error: "Wystąpił nieznany błąd. Skontaktuj się z"
+
+#dictionary
+there_is_no_such_player: "Takiego gracza nie ma na serwerze!"
+
+#comands
+command_arguments: "Proszę podać argument do komendy."
+command_reload: "Przeładowywuję plugin."
+alltime_description: "Pokazuje czas wszystkich graczy"
+
+#admincommands
+you_are_not_authorized: "Nie jesteś uprawniony do użycia tej komendy."
+remember_to_restart: "Zapamiętaj by zrestartować bota jeśli wszystko ustawiłeś"
+
+reset_message: "Bot Discord został zrestartowany."
+changes_saved_successfully: "Pomyślnie zapisano zmiany"
+
+admin_command_permission: "Nie masz uprawnień do wykonania tej komendy."
+admin_command_0arg: "Pomoc dla Discord Integration:"
+admin_command_0arg1: "/discordintegration reload - Przeładuj plugin"
+admin_command_0arg2: "/discordintegration past token <token> - Edytuj plik config.yml i wkleja go do TOKEN"
+admin_command_0arg3: "/discordintegration past log <id kanału> - Edytuj plik config.yml i wkleja go do log_id"
+admin_command_0arg4: "/discordintegration past report <id kanału> - Edytuj plik config.yml i wkleja go do report_channel"
+admin_command_reload: "Plugin Discord Integration został przeładowany."
+admin_command_token_past: "Poprawne użycie: /discordintegration past token [Discord bot token]"
+admin_command_logid_past: "Poprawne użycie: /discordintegration past log [Discord id kanału]"
+admin_command_report_past: "Poprawne użycie: /discordintegration past report [Discord id kanału]"
+admin_command_token_accept: "Token został wklejony do pliku config.yml."
+
+
+#report
+report_successfully_reported: "Pomyślnie zgłoszono gracza"
+report_report_player: "Zgłoszenie gracza"
+report_was_reported_for: "został zgłoszony za"
+report_for: "za"
+report_applicant: "Zgłaszający"
+report_notified: "Zgłoszony"
+report_content: "Treść"
+report_notification_from: "Zgłoszenie z"
+report_incorrect_syntax: "Niepoprawna składnia!"
+report_correct_usage: "Poprawne użycie: /report <gracz> <treść>"
+
+#discord
+discord_playtime: "playtime"
+discord_status: "graczy na serwerze Minecraft!"
+
+#playtime
+playtime_minutes_on_server: " gra na serwerze {minutes} minut."
+playtime_hours_on_server: " gra na serwerze {hours} godzin (dokładnie {minutes} minut.) "
+discord_playtime_description: "Sprowdź ile czasu gracz spędził na serwerze"
+discord_playtime_enter_player_name: "Wprowadź nick gracza Minecraft"
+playtime_null_player: "Nie ma takiego gracza!"
+#in a single line
+discord_playtime_nick: "nick_gracza_minecraft"
+
+#commandlog
+commandlog_use_command: "użył komendy"
+commandlog_use_log: "Log użycia komendy"
+commandlog_command_use: "Komenda użyta"
+commandlog_command: "Komenda"
+commandlog_player: "Gracz"
