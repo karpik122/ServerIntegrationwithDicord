@@ -40,8 +40,10 @@ public class DiscordIntegrationAdminCommand implements CommandExecutor {
 
 
         if (command.getName().equalsIgnoreCase("discordintegration")) {
+            // Sprawdź, czy komenda jest poprawnie używana, np. /discordintegration reload
 
             if (args[0].equalsIgnoreCase("reload")) {
+                // Wywołaj funkcję do przeładowania integracji z Discordem
 
                 reloadDiscordIntegration();
 
