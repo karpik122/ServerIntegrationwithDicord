@@ -20,9 +20,9 @@ public class DiscordIntegrationAdminTabCompleter implements TabCompleter {
             if (args.length == 1) {
                 completions.add("reload");
                 completions.add("past");
-                completions.add("report");
             }
-            if (args.length == 2) {
+
+            else if (args.length == 2 && !"reload".startsWith(args[0])) {
                 completions.add("token");
                 completions.add("log");
                 completions.add("report");

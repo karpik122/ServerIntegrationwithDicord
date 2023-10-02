@@ -7,6 +7,7 @@ prefix: ServerIntegrationwithDicord
 description: Plugin for minecraft server
 commands:
   report:
+
   discordintegration:
     permission: serverintegrationwithdicord.admin
     reload:
@@ -17,6 +18,7 @@ commands:
       permission: serverintegrationwithdicord.admin
     token:
       permission: serverintegrationwithdicord.admin
+
 permissions:
   serverintegrationwithdicord.admin:
     default: false

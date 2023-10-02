@@ -32,7 +32,7 @@ public class CommandLogger implements Listener {
         String command_use = languageLoader.getTranslation("commandlog_command_use");
         String command = languageLoader.getTranslation("commandlog_command");
         String player = languageLoader.getTranslation("commandlog_player");
-        String an_unknown_error = languageLoader.getTranslation("an_unknown_error");
+
 
 
         String id_log_channel = plugin.getConfig().getString("id_log_channel");
@@ -60,8 +60,6 @@ public class CommandLogger implements Listener {
 
             assert tc != null;
             tc.sendMessageEmbeds(eb.build()).queue();
-        } else {
-            Bukkit.getConsoleSender().sendMessage(ChatColor.RED + an_unknown_error);
         }
     }
 }

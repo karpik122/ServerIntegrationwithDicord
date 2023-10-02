@@ -6,7 +6,6 @@ Save_game_time: "Zapisano czas gry"
 unable_to_check_for_update: "Nie można sprawdzić dostępności aktualizacji"
 there_is_not_a_new_update: "Nie ma dostępnej nowej aktualizacji."
 there_is_a_new_update: "Dostępna jest nowa aktualizacja."
-an_unknown_error: "Wystąpił nieznany błąd. Skontaktuj się z"
 
 #dictionary
 there_is_no_such_player: "Takiego gracza nie ma na serwerze!"

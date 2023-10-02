@@ -27,7 +27,7 @@ public class Reports implements Listener, CommandExecutor {
     private final LanguageLoader languageLoader;
     public Reports(Main pl) {
         this.plugin = pl;
-        Objects.requireNonNull(plugin.getCommand("report")).setExecutor(this);
+        plugin.getCommand("report").setExecutor(this);
         languageLoader = LanguageManager.getInstance();
     }
 
@@ -50,8 +50,6 @@ public class Reports implements Listener, CommandExecutor {
 
         assert report != null;
         TextChannel reportChannel = jda.getTextChannelById(report);
-
-
 
         Player p = (Player) sender;
         Player reported;
@@ -97,6 +95,5 @@ public class Reports implements Listener, CommandExecutor {
             p.sendMessage(ChatColor.RED + report_incorrect_syntax + " \n " + ChatColor.GREEN + report_correct_usage);
         }
         return true;
-
     }
 }

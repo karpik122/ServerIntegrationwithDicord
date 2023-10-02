@@ -63,20 +63,22 @@ public final class Main extends JavaPlugin implements Listener {
             return;
         }
 
-        Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "MinecraftDiscordIntegration - " + langLoader.getTranslation("loading"));
+        Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Server Integration with Dicord - " + langLoader.getTranslation("loading"));
         runBot();
-        Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "MinecraftDiscordIntegration - " + langLoader.getTranslation("Log_in_for") + " " + jda.getSelfUser().getName() + " (" + jda.getSelfUser().getId() + ")");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "Server Integration with Dicord - " + langLoader.getTranslation("Log_in_for") + " " + jda.getSelfUser().getName() + " (" + jda.getSelfUser().getId() + ")");
 
         Bukkit.getConsoleSender().sendMessage("");
-        Bukkit.getConsoleSender().sendMessage(" /$$      /$$  /$$$$$$  /$$$$$$$  /$$$$$$");
-        Bukkit.getConsoleSender().sendMessage("| $$$    /$$$ /$$__  $$| $$__  $$ |_  $$_/");
-        Bukkit.getConsoleSender().sendMessage("| $$$$  /$$$$| $$  \\__/| $$  \\ $$   | $$");
-        Bukkit.getConsoleSender().sendMessage("| $$ $$/$$ $$| $$      | $$  | $$   | $$");
-        Bukkit.getConsoleSender().sendMessage("| $$  $$$| $$| $$      | $$  | $$   | $$");
-        Bukkit.getConsoleSender().sendMessage("| $$\\  $ | $$| $$    $$| $$  | $$   | $$");
-        Bukkit.getConsoleSender().sendMessage("| $$ \\/  | $$|  $$$$$$/| $$$$$$$/ /$$$$$$");
-        Bukkit.getConsoleSender().sendMessage("|__/     |__/ \\______/ |_______/ |______/");
         Bukkit.getConsoleSender().sendMessage("");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░██████╗░██╗░░██╗░░░░░░░██╗░██████╗░");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "██╔════╝░██║░░██║░░██╗░░██║░██╔══██╗");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "╚█████╗░░██║░░╚██╗████╗██╔╝░██║░░██║");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░╚═══██╗░██║░░░████╔═████║░░██║░░██║");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "██████╔╝░██║░░░╚██╔╝░╚██╔╝░░██████╔╝");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "╚═════╝░░╚═╝░░░░╚═╝░░░╚═╝░░░╚═════╝░");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░");
+        Bukkit.getConsoleSender().sendMessage("");
+
 
         getServer().getPluginManager().registerEvents(this, this);
         getServer().getPluginManager().registerEvents(new CommandLogger(this), this);
@@ -92,14 +94,15 @@ public final class Main extends JavaPlugin implements Listener {
 
         jda.shutdown();
         Bukkit.getConsoleSender().sendMessage("");
-        Bukkit.getConsoleSender().sendMessage(" /$$      /$$  /$$$$$$  /$$$$$$$    /$$$$$$");
-        Bukkit.getConsoleSender().sendMessage("| $$$    /$$$ /$$__  $$| $$__  $$   |_  $$_/");
-        Bukkit.getConsoleSender().sendMessage("| $$$$  /$$$$| $$  \\__/| $$  \\ $$   | $$");
-        Bukkit.getConsoleSender().sendMessage("| $$ $$/$$ $$| $$      | $$  | $$   | $$");
-        Bukkit.getConsoleSender().sendMessage("| $$  $$$| $$| $$      | $$  | $$   | $$");
-        Bukkit.getConsoleSender().sendMessage("| $$\\  $ | $$| $$    $$| $$  | $$   | $$");
-        Bukkit.getConsoleSender().sendMessage("| $$ \\/  | $$|  $$$$$$/| $$$$$$$/ /$$$$$$");
-        Bukkit.getConsoleSender().sendMessage("|__/     |__/ \\______/ |_______/ |______/");
+        Bukkit.getConsoleSender().sendMessage("");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░██████╗░██╗░░██╗░░░░░░░██╗░██████╗░");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "██╔════╝░██║░░██║░░██╗░░██║░██╔══██╗");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "╚█████╗░░██║░░╚██╗████╗██╔╝░██║░░██║");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░╚═══██╗░██║░░░████╔═████║░░██║░░██║");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "██████╔╝░██║░░░╚██╔╝░╚██╔╝░░██████╔╝");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "╚═════╝░░╚═╝░░░░╚═╝░░░╚═╝░░░╚═════╝░");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░");
         Bukkit.getConsoleSender().sendMessage("");
         Bukkit.getConsoleSender().sendMessage(Color.RED + pluginOff);
     }
