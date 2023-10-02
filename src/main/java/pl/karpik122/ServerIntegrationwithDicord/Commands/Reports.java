@@ -27,7 +27,7 @@ public class Reports implements Listener, CommandExecutor {
     private final LanguageLoader languageLoader;
     public Reports(Main pl) {
         this.plugin = pl;
-        plugin.getCommand("report").setExecutor(this);
+        Objects.requireNonNull(plugin.getCommand("report")).setExecutor(this);
         languageLoader = LanguageManager.getInstance();
     }
 
