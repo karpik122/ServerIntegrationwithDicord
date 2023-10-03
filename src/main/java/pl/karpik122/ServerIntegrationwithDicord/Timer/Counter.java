@@ -25,8 +25,6 @@ public class Counter extends TimerTask {
 
     @SneakyThrows
     public void run() {
-        String Save_game_time = languageLoader.getTranslation("Save_game_time");
-        Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + Save_game_time);
         File f = new File(plugin.getDataFolder(), "playtime.yml");
 
         YamlConfiguration file = YamlConfiguration.loadConfiguration(f);
