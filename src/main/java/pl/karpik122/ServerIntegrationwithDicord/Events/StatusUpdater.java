@@ -32,6 +32,8 @@ public class StatusUpdater extends TimerTask {
             jda.getPresence().setStatus(OnlineStatus.ONLINE);
         }
 
-        jda.getPresence().setActivity(Activity.watching(pn + " " + discord_status));
+        discord_status = discord_status.replace("{player_count}", String.valueOf(pn));
+
+        jda.getPresence().setActivity(Activity.watching(discord_status));
     }
 }

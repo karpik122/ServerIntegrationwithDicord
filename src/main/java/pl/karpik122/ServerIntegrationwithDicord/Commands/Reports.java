@@ -34,19 +34,15 @@ public class Reports implements Listener, CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         String report = plugin.getConfig().getString("report_channel");
-        String report_successfully_reported = languageLoader.getTranslation("report_successfully_reported");
-        String report_successfully_for = languageLoader.getTranslation("report_report_player");
-        String report_for = languageLoader.getTranslation("report_for");
+
         String there_is_no_such_player = languageLoader.getTranslation("there_is_no_such_player");
-        String report_was_reported_for = languageLoader.getTranslation("report_was_reported_for");
-        String player = languageLoader.getTranslation("player");
+        String report_report = languageLoader.getTranslation("report_report");
         String report_applicant = languageLoader.getTranslation("report_applicant");
         String report_notified = languageLoader.getTranslation("report_notified");
-        String report_content = languageLoader.getTranslation("report_content");
-        String report_notification_from = languageLoader.getTranslation("report_notification_from");
-        String report_incorrect_syntax = languageLoader.getTranslation("report_incorrect_syntax");
+        String notification_from = languageLoader.getTranslation("notification_from");
         String report_correct_usage = languageLoader.getTranslation("report_correct_usage");
-
+        String report_reason = languageLoader.getTranslation("report_reason");
+        String report_successfully = languageLoader.getTranslation("report_successfully");
 
         assert report != null;
         TextChannel reportChannel = jda.getTextChannelById(report);
@@ -56,6 +52,8 @@ public class Reports implements Listener, CommandExecutor {
         if (args.length > 1) {
 
             reported = Bukkit.getPlayer(args[0]);
+            assert reported != null;
+            String playerName = reported.getName();
 
             StringBuilder content = new StringBuilder();
 
@@ -63,9 +61,12 @@ public class Reports implements Listener, CommandExecutor {
                 content.append(" ").append(args[i]);
             }
 
+            report_successfully = report_successfully.replace("{player}", playerName);
+            report_successfully = report_successfully.replace("{reason}", String.valueOf(content));
+
             try {
-                assert reported != null;
-                p.sendMessage(ChatColor.GREEN + report_successfully_reported + " " + ChatColor.RED + reported.getName() + ChatColor.GREEN + " " + report_for + " " + ChatColor.RED + content);
+
+                p.sendMessage(ChatColor.GREEN + report_successfully);
             } catch (Exception e) {
                 p.sendMessage(ChatColor.RED + there_is_no_such_player);
             }
@@ -73,26 +74,27 @@ public class Reports implements Listener, CommandExecutor {
             Bukkit.getOnlinePlayers().stream().filter(ServerOperator::isOp).forEach(ops ->
                     ops.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0f, 0f));
 
-            String finalContent = content.toString();
-            Player finalReported = reported;
+
+            String finalReport_successfully = report_successfully;
             Bukkit.getOnlinePlayers().stream().filter(ServerOperator::isOp).forEach(ops ->
-                    ops.sendMessage(ChatColor.GREEN + player + " " + ChatColor.RED + finalReported.getName() + ChatColor.GREEN + " " + report_was_reported_for + ChatColor.RED + finalContent));
+                    ops.sendMessage(ChatColor.GREEN + finalReport_successfully)
+            );
 
             EmbedBuilder emb = new EmbedBuilder();
-            emb.setAuthor(report_successfully_for, null, "https://minotar.net/helm/" + p.getName() + "/300.png");
+            emb.setAuthor(report_report, null, "https://minotar.net/helm/" + p.getName() + "/300.png");
             emb.setThumbnail("https://minotar.net/helm/" + reported.getName() + "/300.png");
             emb.addField(report_applicant, p.getName(), true);
             emb.addField(report_notified, reported.getName(), true);
-            emb.addField(report_content, content.toString(), false);
+            emb.addField(report_reason, content.toString(), false);
             emb.setColor(Color.YELLOW);
-            emb.setFooter(report_notification_from);
+            emb.setFooter(notification_from);
             emb.setTimestamp(Instant.now());
-
 
             assert reportChannel != null;
             reportChannel.sendMessageEmbeds(emb.build()).queue();
-        }else {
-            p.sendMessage(ChatColor.RED + report_incorrect_syntax + " \n " + ChatColor.GREEN + report_correct_usage);
+
+        } else {
+            p.sendMessage(ChatColor.RED + report_correct_usage);
         }
         return true;
     }

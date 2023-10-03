@@ -43,7 +43,10 @@ public final class Main extends JavaPlugin implements Listener {
 
         String there_is_not_a_new_update = langLoader.getTranslation("there_is_not_a_new_update");
         String there_is_a_new_update = langLoader.getTranslation("there_is_a_new_update");
+        String loading = langLoader.getTranslation("loading");
+        String Log_in_for = langLoader.getTranslation("Log_in_for");
 
+        Timer timer = new Timer();
 
         new UpdateChecker(this, 111094).getVersion(version -> {
             if (this.getDescription().getVersion().equals(version)) {
@@ -59,13 +62,17 @@ public final class Main extends JavaPlugin implements Listener {
 
         if (TOKEN == null || TOKEN.equals("BOT_TOKEN")) {
             getLogger().warning("Invalid TOKEN in config.yml file. I turn off the plugin...");
-            onDisable();
+            timer.schedule(new Counter(this), 0L, 60000L);
             return;
         }
 
-        Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Server Integration with Dicord - " + langLoader.getTranslation("loading"));
+        Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Server Integration with Dicord - " + loading);
         runBot();
-        Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "Server Integration with Dicord - " + langLoader.getTranslation("Log_in_for") + " " + jda.getSelfUser().getName() + " (" + jda.getSelfUser().getId() + ")");
+
+        Log_in_for = Log_in_for.replace("{botName}", jda.getSelfUser().getName());
+        Log_in_for = Log_in_for.replace("{botID}",  jda.getSelfUser().getId());
+
+        Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "Server Integration with Dicord - " + Log_in_for);
 
         Bukkit.getConsoleSender().sendMessage("");
         Bukkit.getConsoleSender().sendMessage("");
@@ -83,7 +90,6 @@ public final class Main extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(this, this);
         getServer().getPluginManager().registerEvents(new CommandLogger(this), this);
         new Reports(this);
-        Timer timer = new Timer();
         timer.schedule(new StatusUpdater(this), 0L, 30000L);
         timer.schedule(new Counter(this), 0L, 60000L);
     }

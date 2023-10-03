@@ -3,8 +3,6 @@ package pl.karpik122.ServerIntegrationwithDicord.Logi;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
@@ -27,16 +25,12 @@ public class CommandLogger implements Listener {
 
     @EventHandler
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-        String use_command = languageLoader.getTranslation("commandlog_use_command");
-        String log_command_use = languageLoader.getTranslation("commandlog_use_log");
-        String command_use = languageLoader.getTranslation("commandlog_command_use");
-        String command = languageLoader.getTranslation("commandlog_command");
-        String player = languageLoader.getTranslation("commandlog_player");
-
-
-
         String id_log_channel = plugin.getConfig().getString("id_log_channel");
-        EmbedBuilder eb = new EmbedBuilder();
+
+        String commandlog_use_log = languageLoader.getTranslation("commandlog_use_log");
+        String commandlog_command = languageLoader.getTranslation("commandlog_command");
+        String commandlog_player = languageLoader.getTranslation("commandlog_player");
+        String notification_from = languageLoader.getTranslation("notification_from");
 
 
         if (!event.getMessage().contains("/login") && !event.getMessage().contains("/l") &&
@@ -45,14 +39,14 @@ public class CommandLogger implements Listener {
                 !event.getMessage().contains("/changepass") && !event.getMessage().contains("/help") &&
                 !event.getMessage().contains("/discordintegration") && !event.getMessage().contains("/report")) {
 
-            Bukkit.getConsoleSender().sendMessage(ChatColor.RED + event.getPlayer().getName() + " " + use_command + " " + event.getMessage());
+            EmbedBuilder eb = new EmbedBuilder();
 
             eb.setAuthor(event.getPlayer().getName());
-            eb.setColor(Color.red);
-            eb.setTitle(log_command_use);
-            eb.addField(command, event.getMessage(), true);
-            eb.addField(player, event.getPlayer().getName(), true);
-            eb.setFooter(command_use);
+            eb.setColor(Color.RED);
+            eb.setTitle(commandlog_use_log);
+            eb.addField(commandlog_command, event.getMessage(), true);
+            eb.addField(commandlog_player, event.getPlayer().getName(), true);
+            eb.setFooter(notification_from);
             eb.setTimestamp(Instant.now());
 
             assert id_log_channel != null;

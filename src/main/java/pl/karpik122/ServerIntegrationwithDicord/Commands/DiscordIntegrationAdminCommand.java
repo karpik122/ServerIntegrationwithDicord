@@ -1,6 +1,5 @@
 package pl.karpik122.ServerIntegrationwithDicord.Commands;
 
-import net.dv8tion.jda.api.JDA;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -16,7 +15,6 @@ import pl.karpik122.ServerIntegrationwithDicord.Main;
 public class DiscordIntegrationAdminCommand implements CommandExecutor {
 
     private final Main pl;
-    JDA jda = Main.jda;
     private final LanguageLoader languageLoader;
 
     public DiscordIntegrationAdminCommand(Main pl) {
@@ -27,24 +25,19 @@ public class DiscordIntegrationAdminCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
         String remember_to_restart = languageLoader.getTranslation("remember_to_restart");
-        String changes_saved_successfully = languageLoader.getTranslation("changes_saved_successfully");
-        String admin_command_0arg = languageLoader.getTranslation("admin_command_0arg");
-        String admin_command_0arg1 = languageLoader.getTranslation("admin_command_0arg1");
-        String admin_command_0arg2 = languageLoader.getTranslation("admin_command_0arg2");
-        String admin_command_0arg3 = languageLoader.getTranslation("admin_command_0arg3");
-        String admin_command_0arg4 = languageLoader.getTranslation("admin_command_0arg4");
+
+        String admin_command_help = languageLoader.getTranslation("admin_command_help");
         String admin_command_reload = languageLoader.getTranslation("admin_command_reload");
-        String admin_command_token_past = languageLoader.getTranslation("admin_command_token_past");
-        String admin_command_token_accept = languageLoader.getTranslation("admin_command_token_accept");
-        String admin_command_logid_past = languageLoader.getTranslation("admin_command_logid_past");
-        String admin_command_report_past = languageLoader.getTranslation("admin_command_report_past");
+        String admin_command_past_token = languageLoader.getTranslation("admin_command_past_token");
+        String admin_command_past_log = languageLoader.getTranslation("admin_command_past_log");
+        String admin_command_past_report = languageLoader.getTranslation("admin_command_past_report");
+        String admin_command_accept = languageLoader.getTranslation("admin_command_accept");
+
 
 
         if (command.getName().equalsIgnoreCase("discordintegration")) {
-            // Sprawdź, czy komenda jest poprawnie używana, np. /discordintegration reload
 
             if (args[0].equalsIgnoreCase("reload")) {
-                // Wywołaj funkcję do przeładowania integracji z Discordem
                 sender.sendMessage(ChatColor.GREEN + "Reload(...)");
 
                 pl.saveConfig();
@@ -62,11 +55,11 @@ public class DiscordIntegrationAdminCommand implements CommandExecutor {
 
                         saveTokenToConfig(discordToken);
 
-                        sender.sendMessage(ChatColor.GREEN + admin_command_token_accept);
+                        sender.sendMessage(ChatColor.GREEN + admin_command_accept);
                         sender.sendMessage(ChatColor.RED + remember_to_restart);
                         return true;
                     }
-                    sender.sendMessage(admin_command_token_past);
+                    sender.sendMessage(admin_command_past_token);
                     return true;
                 }
                 if (args[1].equalsIgnoreCase("log")) {
@@ -75,11 +68,11 @@ public class DiscordIntegrationAdminCommand implements CommandExecutor {
 
                         saveLogIdToConfig(logid);
 
-                        sender.sendMessage(ChatColor.GREEN + changes_saved_successfully);
+                        sender.sendMessage(ChatColor.GREEN + admin_command_accept);
                         sender.sendMessage(ChatColor.RED + remember_to_restart);
                         return true;
                     }
-                    sender.sendMessage(admin_command_logid_past);
+                    sender.sendMessage(admin_command_past_log);
                     return true;
                 }
                 if (args[1].equalsIgnoreCase("report")) {
@@ -88,24 +81,26 @@ public class DiscordIntegrationAdminCommand implements CommandExecutor {
 
                         saveReportIdConfig(reportid);
 
-                        sender.sendMessage(ChatColor.GREEN + changes_saved_successfully);
+                        sender.sendMessage(ChatColor.GREEN + admin_command_accept);
                         sender.sendMessage(ChatColor.RED + remember_to_restart);
                         return true;
                     }
-                    sender.sendMessage(admin_command_report_past);
+                    sender.sendMessage(admin_command_past_report);
                     return true;
                 }
-                sender.sendMessage(admin_command_token_past);
-                sender.sendMessage(admin_command_report_past);
-                sender.sendMessage(admin_command_logid_past);
+                sender.sendMessage(ChatColor.GREEN + admin_command_help);
+                sender.sendMessage(ChatColor.GREEN + admin_command_reload);
+                sender.sendMessage(ChatColor.GREEN + admin_command_past_token);
+                sender.sendMessage(ChatColor.GREEN + admin_command_past_log);
+                sender.sendMessage(ChatColor.GREEN + admin_command_past_report);
                 return true;
             }
+            sender.sendMessage(ChatColor.GREEN + admin_command_help);
+            sender.sendMessage(ChatColor.GREEN + admin_command_reload);
+            sender.sendMessage(ChatColor.GREEN + admin_command_past_token);
+            sender.sendMessage(ChatColor.GREEN + admin_command_past_log);
+            sender.sendMessage(ChatColor.GREEN + admin_command_past_report);
 
-            sender.sendMessage(ChatColor.GREEN + admin_command_0arg);
-            sender.sendMessage(ChatColor.GREEN + admin_command_0arg1);
-            sender.sendMessage(ChatColor.GREEN + admin_command_0arg2);
-            sender.sendMessage(ChatColor.GREEN + admin_command_0arg3);
-            sender.sendMessage(ChatColor.GREEN + admin_command_0arg4);
             return true;
         }
         return false;
@@ -132,17 +127,20 @@ public class DiscordIntegrationAdminCommand implements CommandExecutor {
         FileConfiguration config = pl.getConfig();
         config.set("TOKEN", token);
         pl.saveConfig();
+        reload();
     }
 
     private void saveLogIdToConfig(String logid) {
         FileConfiguration config = pl.getConfig();
         config.set("id_log_channel", logid);
         pl.saveConfig();
+        reload();
     }
 
     private void saveReportIdConfig(String reportid) {
         FileConfiguration config = pl.getConfig();
         config.set("report_channel", reportid);
         pl.saveConfig();
+        reload();
     }
 }
