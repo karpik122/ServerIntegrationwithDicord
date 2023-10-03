@@ -43,8 +43,6 @@ public class DiscordIntegrationAdminCommand implements CommandExecutor {
                 pl.saveConfig();
                 pl.reloadConfig();
                 reload();
-
-                sender.sendMessage(ChatColor.GREEN + admin_command_reload);
                 return true;
             }
 
@@ -59,7 +57,7 @@ public class DiscordIntegrationAdminCommand implements CommandExecutor {
                         sender.sendMessage(ChatColor.RED + remember_to_restart);
                         return true;
                     }
-                    sender.sendMessage(admin_command_past_token);
+                    sender.sendMessage(ChatColor.YELLOW + admin_command_past_token);
                     return true;
                 }
                 if (args[1].equalsIgnoreCase("log")) {
@@ -72,7 +70,7 @@ public class DiscordIntegrationAdminCommand implements CommandExecutor {
                         sender.sendMessage(ChatColor.RED + remember_to_restart);
                         return true;
                     }
-                    sender.sendMessage(admin_command_past_log);
+                    sender.sendMessage(ChatColor.YELLOW + admin_command_past_log);
                     return true;
                 }
                 if (args[1].equalsIgnoreCase("report")) {
@@ -85,7 +83,7 @@ public class DiscordIntegrationAdminCommand implements CommandExecutor {
                         sender.sendMessage(ChatColor.RED + remember_to_restart);
                         return true;
                     }
-                    sender.sendMessage(admin_command_past_report);
+                    sender.sendMessage(ChatColor.YELLOW + admin_command_past_report);
                     return true;
                 }
                 sender.sendMessage(ChatColor.GREEN + admin_command_help);
