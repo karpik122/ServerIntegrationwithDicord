@@ -1,6 +1,6 @@
 # Server Integration with Dicord
 This plugin is designed to make the administration's work more pleasant and efficient by sending reports to a selected discord channel.
-- Logs of commands used by players (in addition to /login, /register, /changepassword etc).
+- Logs of commands used by players (in addition to /login, /register, /changepassword etc.).
 It also offers a plugin to check how much time players have spent on the server
 
  

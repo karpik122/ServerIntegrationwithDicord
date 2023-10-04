@@ -30,8 +30,8 @@ there_is_a_new_update: "A new version of the plugin is available."
 Log_in_for: "Logged in as {botName} ({botID})."
 
 #Playtime
-playtime_minutes_on_server: "**{player} plays {minutes} on the server."
-playtime_hours_on_server: "**{player} plays on the server {hours} exactly ({minutes} min.)."
+playtime_minutes_on_server: "**{player} plays {minutes} min. on the server."
+playtime_hours_on_server: "**{player} plays on the server {hours} h. exactly ({minutes} min.)."
 playtime_null_player: "There is no such player."
 discord_playtime_nick: "nick"
 discord_playtime: "playtime"

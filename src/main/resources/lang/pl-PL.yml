@@ -23,7 +23,7 @@ commandlog_player: "Gracz"
 
 #Loading
 loading: "Ładowanie ... "
-Plugin_off: "Wyłączam plugin ..."
+Plugin_off: "Wyłaczam plugin ..."
 unable_to_check_for_update: "Nie mogę sprawdzić wersji pluginu."
 there_is_not_a_new_update: "Nie ma na ten momęt nowej wersji pluginu."
 there_is_a_new_update: "Jest dostępna nowa wersja pluginu."
@@ -31,7 +31,7 @@ Log_in_for: "Zalogowano jako {botName} ({botID})."
 
 #Playtime
 playtime_minutes_on_server: "**{player} gra na serwerze {minutes} min. na serwerze.**"
-playtime_hours_on_server: "**{player} gra na serwerze {hours} dokładnie ({minutes} min.).**"
+playtime_hours_on_server: "**{player} gra na serwerze {hours} godz. dokładnie ({minutes} min.).**"
 playtime_null_player: "Nie ma takiego gracza."
 discord_playtime_nick: "nick"
 discord_playtime: "playtime"

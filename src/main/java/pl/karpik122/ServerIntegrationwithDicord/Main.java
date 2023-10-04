@@ -3,6 +3,7 @@ package pl.karpik122.ServerIntegrationwithDicord;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -25,10 +26,11 @@ import java.util.Timer;
 public final class Main extends JavaPlugin implements Listener {
     private final LanguageLoader langLoader;
 
-
+    private final int pluginID = 19965;
     public static JDA jda;
     FileConfiguration config = this.getConfig();
     String TOKEN = this.getConfig().getString("TOKEN");
+
 
     public Main() {
         langLoader = LanguageManager.getInstance();
@@ -36,6 +38,9 @@ public final class Main extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
+        Metrics metrics = new Metrics(this, pluginID);
+
+
         config.options().copyDefaults(true);
         saveDefaultConfig();
         LanguageLoader langLoader = new LanguageLoader(this);
@@ -98,6 +103,8 @@ public final class Main extends JavaPlugin implements Listener {
     public void onDisable() {
         String pluginOff = langLoader.getTranslation("Plugin_off");
 
+        Metrics metrics = new Metrics(this, pluginID);
+        metrics.shutdown();
         jda.shutdown();
         Bukkit.getConsoleSender().sendMessage("");
         Bukkit.getConsoleSender().sendMessage("");
