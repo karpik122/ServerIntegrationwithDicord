@@ -101,6 +101,8 @@ public final class Main extends JavaPlugin implements Listener {
 
 
     public void onDisable() {
+        LanguageLoader langLoader = new LanguageLoader(this);
+        LanguageManager.init(langLoader);
         String pluginOff = langLoader.getTranslation("Plugin_off");
 
         Metrics metrics = new Metrics(this, pluginID);
@@ -117,7 +119,7 @@ public final class Main extends JavaPlugin implements Listener {
         Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "╚═════╝░░╚═╝░░░░╚═╝░░░╚═╝░░░╚═════╝░");
         Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░");
         Bukkit.getConsoleSender().sendMessage("");
-        Bukkit.getConsoleSender().sendMessage(Color.RED + pluginOff);
+        Bukkit.getConsoleSender().sendMessage(ChatColor.RED + pluginOff);
     }
     public void runBot() {
         try {

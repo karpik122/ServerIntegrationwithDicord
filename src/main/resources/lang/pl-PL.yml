@@ -23,7 +23,7 @@ commandlog_player: "Gracz"
 
 #Loading
 loading: "Ładowanie ... "
-Plugin_off: "Wyłaczam plugin ..."
+Plugin_off: "Wyłączam plugin ..."
 unable_to_check_for_update: "Nie mogę sprawdzić wersji pluginu."
 there_is_not_a_new_update: "Nie ma na ten momęt nowej wersji pluginu."
 there_is_a_new_update: "Jest dostępna nowa wersja pluginu."
