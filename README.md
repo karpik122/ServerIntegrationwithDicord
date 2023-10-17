@@ -28,4 +28,11 @@ Discord commands
 /alltime - sends a list of all players and their time spent on the server. This command can only be used by a person who has admin rights on a discord server.
 Discord commands
 /playtime <player_name> - sends a message to the discord chat about how much time a player has spent on the server (the "playtime" command can be edited to whatever name you want in the lang file in the line where "discord_playtime:" is).
-/alltime - sends a list of all players and their time spent on the server. This command can only be used by a person who has admin rights on a discord server.
+
+![Serwer Integration with Discord stats](https://bstats.org/signatures/bukkit/Serwer%20Integration%20with%20Discord.svg)
+
+My discord server: ![Server Discord](https://discord.com/invite/MzfbMUx4JE)
+
+
+If you have any questions or suggestions regarding this plugin, feel free to write to me on discord: karpik122
+
