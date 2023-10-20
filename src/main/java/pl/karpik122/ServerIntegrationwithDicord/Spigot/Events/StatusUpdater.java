@@ -1,4 +1,4 @@
-package pl.karpik122.ServerIntegrationwithDicord.Events;
+package pl.karpik122.ServerIntegrationwithDicord.Spigot.Events;
 
 import java.util.TimerTask;
 
@@ -6,15 +6,15 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import org.bukkit.Bukkit;
-import pl.karpik122.ServerIntegrationwithDicord.File.LanguageLoader;
-import pl.karpik122.ServerIntegrationwithDicord.File.LanguageManager;
-import pl.karpik122.ServerIntegrationwithDicord.Main;
+import pl.karpik122.ServerIntegrationwithDicord.Spigot.File.LanguageLoader;
+import pl.karpik122.ServerIntegrationwithDicord.Spigot.File.LanguageManager;
+import pl.karpik122.ServerIntegrationwithDicord.Spigot.MainSpigot;
 
 public class StatusUpdater extends TimerTask {
-    JDA jda = Main.jda;
+    JDA jda = MainSpigot.jda;
     private final LanguageLoader languageLoader;
-    public Main plugin;
-    public StatusUpdater(Main pl) {
+    public MainSpigot plugin;
+    public StatusUpdater(MainSpigot pl) {
         this.plugin = pl;
         languageLoader = LanguageManager.getInstance();
     }

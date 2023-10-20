@@ -1,4 +1,4 @@
-package pl.karpik122.ServerIntegrationwithDicord;
+package pl.karpik122.ServerIntegrationwithDicord.Spigot;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -9,34 +9,35 @@ import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
-import pl.karpik122.ServerIntegrationwithDicord.Commands.DiscordIntegrationAdminCommand;
-import pl.karpik122.ServerIntegrationwithDicord.Commands.DiscordIntegrationAdminTabCompleter;
-import pl.karpik122.ServerIntegrationwithDicord.Commands.Reports;
-import pl.karpik122.ServerIntegrationwithDicord.Discord.CommandManager;
-import pl.karpik122.ServerIntegrationwithDicord.Events.StatusUpdater;
-import pl.karpik122.ServerIntegrationwithDicord.File.LanguageLoader;
-import pl.karpik122.ServerIntegrationwithDicord.File.LanguageManager;
-import pl.karpik122.ServerIntegrationwithDicord.Logi.CommandLogger;
-import pl.karpik122.ServerIntegrationwithDicord.Timer.Counter;
-import pl.karpik122.ServerIntegrationwithDicord.Util.UpdateChecker;
+import pl.karpik122.ServerIntegrationwithDicord.Spigot.Commands.DiscordIntegrationAdminCommand;
+import pl.karpik122.ServerIntegrationwithDicord.Spigot.Commands.DiscordIntegrationAdminTabCompleter;
+import pl.karpik122.ServerIntegrationwithDicord.Spigot.Commands.Reports;
+import pl.karpik122.ServerIntegrationwithDicord.Spigot.Discord.CommandManager;
+import pl.karpik122.ServerIntegrationwithDicord.Spigot.Events.StatusUpdater;
+import pl.karpik122.ServerIntegrationwithDicord.Spigot.File.LanguageLoader;
+import pl.karpik122.ServerIntegrationwithDicord.Spigot.File.LanguageManager;
+import pl.karpik122.ServerIntegrationwithDicord.Spigot.Logi.CommandLogger;
+import pl.karpik122.ServerIntegrationwithDicord.Spigot.Timer.Counter;
+import pl.karpik122.ServerIntegrationwithDicord.Spigot.Util.UpdateChecker;
 
 import java.util.Timer;
 
-public final class Main extends JavaPlugin implements Listener {
+public final class MainSpigot extends JavaPlugin implements Listener {
     private final LanguageLoader langLoader;
 
     private final int pluginID = 19965;
     public static JDA jda;
     FileConfiguration config = this.getConfig();
-    String TOKEN = this.getConfig().getString("TOKEN");
+    String TOKEN = config.getString("TOKEN");
 
 
-    public Main() {
+    public MainSpigot() {
         langLoader = LanguageManager.getInstance();
     }
 
     @Override
     public void onEnable() {
+
         Metrics metrics = new Metrics(this, pluginID);
 
 
@@ -57,7 +58,7 @@ public final class Main extends JavaPlugin implements Listener {
                 Bukkit.getConsoleSender().sendMessage(there_is_not_a_new_update);
             } else {
                 Bukkit.getConsoleSender().sendMessage(there_is_a_new_update);
-                Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "https://www.spigotmc.org/resources/server-integration-with-dicord.111094/");
+                Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "https://www.spigotmc.org/resources/server-integration-with-discord.111094/");
             }
         });
 

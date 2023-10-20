@@ -1,4 +1,4 @@
-package pl.karpik122.ServerIntegrationwithDicord.Commands;
+package pl.karpik122.ServerIntegrationwithDicord.Spigot.Commands;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -13,19 +13,19 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.permissions.ServerOperator;
 import org.jetbrains.annotations.NotNull;
-import pl.karpik122.ServerIntegrationwithDicord.File.LanguageLoader;
-import pl.karpik122.ServerIntegrationwithDicord.File.LanguageManager;
-import pl.karpik122.ServerIntegrationwithDicord.Main;
+import pl.karpik122.ServerIntegrationwithDicord.Spigot.File.LanguageLoader;
+import pl.karpik122.ServerIntegrationwithDicord.Spigot.File.LanguageManager;
+import pl.karpik122.ServerIntegrationwithDicord.Spigot.MainSpigot;
 
 import java.awt.*;
 import java.time.Instant;
 import java.util.Objects;
 
 public class Reports implements Listener, CommandExecutor {
-    JDA jda = Main.jda;
-    private final Main plugin;
+    JDA jda = MainSpigot.jda;
+    private final MainSpigot plugin;
     private final LanguageLoader languageLoader;
-    public Reports(Main pl) {
+    public Reports(MainSpigot pl) {
         this.plugin = pl;
         Objects.requireNonNull(plugin.getCommand("report")).setExecutor(this);
         languageLoader = LanguageManager.getInstance();

@@ -1,4 +1,4 @@
-package pl.karpik122.ServerIntegrationwithDicord.Commands;
+package pl.karpik122.ServerIntegrationwithDicord.Spigot.Commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -7,17 +7,17 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.jetbrains.annotations.NotNull;
-import pl.karpik122.ServerIntegrationwithDicord.File.LanguageLoader;
-import pl.karpik122.ServerIntegrationwithDicord.File.LanguageManager;
-import pl.karpik122.ServerIntegrationwithDicord.Main;
+import pl.karpik122.ServerIntegrationwithDicord.Spigot.File.LanguageLoader;
+import pl.karpik122.ServerIntegrationwithDicord.Spigot.File.LanguageManager;
+import pl.karpik122.ServerIntegrationwithDicord.Spigot.MainSpigot;
 
 
 public class DiscordIntegrationAdminCommand implements CommandExecutor {
 
-    private final Main pl;
+    private final MainSpigot pl;
     private final LanguageLoader languageLoader;
 
-    public DiscordIntegrationAdminCommand(Main pl) {
+    public DiscordIntegrationAdminCommand(MainSpigot pl) {
         this.pl = pl;
         languageLoader = LanguageManager.getInstance();
     }
@@ -36,69 +36,53 @@ public class DiscordIntegrationAdminCommand implements CommandExecutor {
 
 
         if (command.getName().equalsIgnoreCase("discordintegration")) {
+            if (args.length < 1) {
+                sender.sendMessage(ChatColor.RED + "Usage: /discordintegration <reload | past> [token | log | report] <value>");
+                return true;
+            }
 
             if (args[0].equalsIgnoreCase("reload")) {
-                sender.sendMessage(ChatColor.GREEN + "Reload(...)");
-
+                sender.sendMessage(ChatColor.GREEN + "Reload...");
                 pl.saveConfig();
                 pl.reloadConfig();
                 reload();
                 return true;
             }
 
-            if (args[0].equalsIgnoreCase("past")) {
-                if (args[1].equalsIgnoreCase("token")) {
-                    if (args.length == 3) {
-                        String discordToken = args[2];
-
-                        saveTokenToConfig(discordToken);
-
-                        sender.sendMessage(ChatColor.GREEN + admin_command_accept);
-                        sender.sendMessage(ChatColor.RED + remember_to_restart);
-                        return true;
-                    }
-                    sender.sendMessage(ChatColor.YELLOW + admin_command_past_token);
+            if (args[0].equalsIgnoreCase("past") && args.length > 1) {
+                if (args[1].equalsIgnoreCase("token") && args.length == 3) {
+                    String discordToken = args[2];
+                    saveTokenToConfig(discordToken);
+                    sender.sendMessage(ChatColor.GREEN + admin_command_accept);
+                    sender.sendMessage(ChatColor.RED + remember_to_restart);
+                    return true;
+                } else if (args[1].equalsIgnoreCase("log") && args.length == 3) {
+                    String logid = args[2];
+                    saveLogIdToConfig(logid);
+                    sender.sendMessage(ChatColor.GREEN + admin_command_accept);
+                    sender.sendMessage(ChatColor.RED + remember_to_restart);
+                    return true;
+                } else if (args[1].equalsIgnoreCase("report") && args.length == 3) {
+                    String reportid = args[2];
+                    saveReportIdConfig(reportid);
+                    sender.sendMessage(ChatColor.GREEN + admin_command_accept);
+                    sender.sendMessage(ChatColor.RED + remember_to_restart);
+                    return true;
+                } else {
+                    sender.sendMessage(ChatColor.YELLOW + admin_command_help);
+                    sender.sendMessage(ChatColor.GREEN + admin_command_reload);
+                    sender.sendMessage(ChatColor.GREEN + admin_command_past_token);
+                    sender.sendMessage(ChatColor.GREEN + admin_command_past_log);
+                    sender.sendMessage(ChatColor.GREEN + admin_command_past_report);
                     return true;
                 }
-                if (args[1].equalsIgnoreCase("log")) {
-                    if (args.length == 3) {
-                        String logid = args[2];
-
-                        saveLogIdToConfig(logid);
-
-                        sender.sendMessage(ChatColor.GREEN + admin_command_accept);
-                        sender.sendMessage(ChatColor.RED + remember_to_restart);
-                        return true;
-                    }
-                    sender.sendMessage(ChatColor.YELLOW + admin_command_past_log);
-                    return true;
-                }
-                if (args[1].equalsIgnoreCase("report")) {
-                    if (args.length == 3) {
-                        String reportid = args[2];
-
-                        saveReportIdConfig(reportid);
-
-                        sender.sendMessage(ChatColor.GREEN + admin_command_accept);
-                        sender.sendMessage(ChatColor.RED + remember_to_restart);
-                        return true;
-                    }
-                    sender.sendMessage(ChatColor.YELLOW + admin_command_past_report);
-                    return true;
-                }
-                sender.sendMessage(ChatColor.GREEN + admin_command_help);
-                sender.sendMessage(ChatColor.GREEN + admin_command_reload);
-                sender.sendMessage(ChatColor.GREEN + admin_command_past_token);
-                sender.sendMessage(ChatColor.GREEN + admin_command_past_log);
-                sender.sendMessage(ChatColor.GREEN + admin_command_past_report);
-                return true;
             }
-            sender.sendMessage(ChatColor.GREEN + admin_command_help);
+
+            sender.sendMessage(ChatColor.YELLOW + admin_command_help);
             sender.sendMessage(ChatColor.GREEN + admin_command_reload);
             sender.sendMessage(ChatColor.GREEN + admin_command_past_token);
             sender.sendMessage(ChatColor.GREEN + admin_command_past_log);
             sender.sendMessage(ChatColor.GREEN + admin_command_past_report);
-
             return true;
         }
         return false;

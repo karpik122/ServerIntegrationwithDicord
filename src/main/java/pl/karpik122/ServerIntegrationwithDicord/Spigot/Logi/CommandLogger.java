@@ -1,4 +1,4 @@
-package pl.karpik122.ServerIntegrationwithDicord.Logi;
+package pl.karpik122.ServerIntegrationwithDicord.Spigot.Logi;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -6,22 +6,22 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import pl.karpik122.ServerIntegrationwithDicord.File.LanguageLoader;
-import pl.karpik122.ServerIntegrationwithDicord.File.LanguageManager;
-import pl.karpik122.ServerIntegrationwithDicord.Main;
+import pl.karpik122.ServerIntegrationwithDicord.Spigot.File.LanguageLoader;
+import pl.karpik122.ServerIntegrationwithDicord.Spigot.File.LanguageManager;
+import pl.karpik122.ServerIntegrationwithDicord.Spigot.MainSpigot;
 
 import java.awt.*;
 import java.time.Instant;
 
 public class CommandLogger implements Listener {
 
-    private final Main plugin;
+    private final MainSpigot plugin;
     private final LanguageLoader languageLoader;
-    public CommandLogger(Main pl) {
+    public CommandLogger(MainSpigot pl) {
         this.plugin = pl;
         languageLoader = LanguageManager.getInstance();
     }
-    JDA jda = Main.jda;
+    JDA jda = MainSpigot.jda;
 
     @EventHandler
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {

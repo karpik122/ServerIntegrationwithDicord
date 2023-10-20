@@ -1,9 +1,6 @@
-package pl.karpik122.ServerIntegrationwithDicord.File;
-
-
+package pl.karpik122.ServerIntegrationwithDicord.Spigot.File;
 
 public class LanguageManager {
-
     private static LanguageLoader instance;
 
     public static void init(LanguageLoader languageLoader) {

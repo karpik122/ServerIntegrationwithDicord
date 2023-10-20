@@ -1,9 +1,9 @@
-package pl.karpik122.ServerIntegrationwithDicord.Util;
+package pl.karpik122.ServerIntegrationwithDicord.Spigot.Util;
 
 import org.bukkit.Bukkit;
-import pl.karpik122.ServerIntegrationwithDicord.File.LanguageLoader;
-import pl.karpik122.ServerIntegrationwithDicord.File.LanguageManager;
-import pl.karpik122.ServerIntegrationwithDicord.Main;
+import pl.karpik122.ServerIntegrationwithDicord.Spigot.File.LanguageLoader;
+import pl.karpik122.ServerIntegrationwithDicord.Spigot.File.LanguageManager;
+import pl.karpik122.ServerIntegrationwithDicord.Spigot.MainSpigot;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,13 +12,12 @@ import java.util.Scanner;
 import java.util.function.Consumer;
 
 public class UpdateChecker {
-
-    private final Main plugin;
+    private final MainSpigot plugin;
     private final int resourceId;
     private final LanguageLoader languageLoader;
 
 
-    public UpdateChecker(Main plugin, int resourceId) {
+    public UpdateChecker(MainSpigot plugin, int resourceId) {
         this.plugin = plugin;
         languageLoader = LanguageManager.getInstance();
         this.resourceId = resourceId;

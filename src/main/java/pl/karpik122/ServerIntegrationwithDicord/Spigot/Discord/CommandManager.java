@@ -1,4 +1,4 @@
-package pl.karpik122.ServerIntegrationwithDicord.Discord;
+package pl.karpik122.ServerIntegrationwithDicord.Spigot.Discord;
 
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -9,9 +9,9 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
-import pl.karpik122.ServerIntegrationwithDicord.File.LanguageLoader;
-import pl.karpik122.ServerIntegrationwithDicord.File.LanguageManager;
-import pl.karpik122.ServerIntegrationwithDicord.Main;
+import pl.karpik122.ServerIntegrationwithDicord.Spigot.File.LanguageLoader;
+import pl.karpik122.ServerIntegrationwithDicord.Spigot.File.LanguageManager;
+import pl.karpik122.ServerIntegrationwithDicord.Spigot.MainSpigot;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -19,10 +19,10 @@ import java.util.List;
 import java.util.Objects;
 
 public class CommandManager extends ListenerAdapter {
-    private final Main plugin;
+    private final MainSpigot plugin;
     private final LanguageLoader languageLoader;
 
-    public CommandManager(Main pl) {
+    public CommandManager(MainSpigot pl) {
         this.plugin = pl;
         languageLoader = LanguageManager.getInstance();
     }

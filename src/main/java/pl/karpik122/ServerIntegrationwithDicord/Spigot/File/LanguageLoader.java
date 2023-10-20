@@ -1,8 +1,8 @@
-package pl.karpik122.ServerIntegrationwithDicord.File;
+package pl.karpik122.ServerIntegrationwithDicord.Spigot.File;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import pl.karpik122.ServerIntegrationwithDicord.Main;
+import pl.karpik122.ServerIntegrationwithDicord.Spigot.MainSpigot;
 
 import java.io.File;
 import java.util.HashMap;
@@ -10,7 +10,7 @@ import java.util.HashMap;
 public class LanguageLoader {
     private final HashMap<String, String> translationMap;
 
-    public LanguageLoader(Main plugin) {
+    public LanguageLoader(MainSpigot plugin) {
         translationMap = new HashMap<>();
         String locale = plugin.getConfig().getString("language", "en-US");
 

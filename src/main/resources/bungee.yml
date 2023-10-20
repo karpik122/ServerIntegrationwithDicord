@@ -1,8 +1,8 @@
 name: ServerIntegrationwithDicord
-version: ${project.version}
-main: pl.karpik122.ServerIntegrationwithDicord.Spigot.MainSpigot
-api-version: 1.19
 author: karpik122
+version: ${project.version}
+main: pl.karpik122.ServerIntegrationwithDicord.Bungee.MainBungee
+api-version: 1.19
 prefix: ServerIntegrationwithDicord
 description: Plugin for minecraft server
 commands:

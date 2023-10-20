@@ -1,13 +1,12 @@
-package pl.karpik122.ServerIntegrationwithDicord.Timer;
+package pl.karpik122.ServerIntegrationwithDicord.Spigot.Timer;
 
 import lombok.SneakyThrows;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import pl.karpik122.ServerIntegrationwithDicord.File.LanguageLoader;
-import pl.karpik122.ServerIntegrationwithDicord.File.LanguageManager;
-import pl.karpik122.ServerIntegrationwithDicord.Main;
+import pl.karpik122.ServerIntegrationwithDicord.Spigot.File.LanguageLoader;
+import pl.karpik122.ServerIntegrationwithDicord.Spigot.File.LanguageManager;
+import pl.karpik122.ServerIntegrationwithDicord.Spigot.MainSpigot;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,9 +14,9 @@ import java.util.List;
 import java.util.TimerTask;
 
 public class Counter extends TimerTask {
-    private final Main plugin;
+    private final MainSpigot plugin;
     private final LanguageLoader languageLoader;
-    public Counter(Main pl) {
+    public Counter(MainSpigot pl) {
         this.plugin = pl;
         languageLoader = LanguageManager.getInstance();
     }

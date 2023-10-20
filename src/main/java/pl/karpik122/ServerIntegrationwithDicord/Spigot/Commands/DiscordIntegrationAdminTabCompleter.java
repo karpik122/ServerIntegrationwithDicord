@@ -1,4 +1,4 @@
-package pl.karpik122.ServerIntegrationwithDicord.Commands;
+package pl.karpik122.ServerIntegrationwithDicord.Spigot.Commands;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
