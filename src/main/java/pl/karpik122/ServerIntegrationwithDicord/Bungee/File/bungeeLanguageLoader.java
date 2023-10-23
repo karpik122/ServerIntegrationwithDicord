@@ -10,16 +10,15 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Path;
 import java.util.HashMap;
 
-public class LanguageLoader {
+public class bungeeLanguageLoader {
     private HashMap<String, String> translationMap;
     private Configuration translations;
 
-    public LanguageLoader(MainBungee plugin) throws IOException {
+    public bungeeLanguageLoader(MainBungee plugin) throws IOException {
         translationMap = new HashMap<>();
-        String locale = Config.getInstance(plugin).getConfig().getString("language");
+        String locale = bungeeConfig.getInstance(plugin).getConfig().getString("language");
 
         File langFolder = new File(plugin.getDataFolder(), "lang");
         if (!langFolder.exists()) {

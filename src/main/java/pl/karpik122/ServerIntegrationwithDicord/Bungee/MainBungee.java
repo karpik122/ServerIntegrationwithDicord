@@ -6,35 +6,35 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.plugin.Plugin;
-import pl.karpik122.ServerIntegrationwithDicord.Bungee.File.Config;
-import pl.karpik122.ServerIntegrationwithDicord.Bungee.File.LanguageLoader;
-import pl.karpik122.ServerIntegrationwithDicord.Bungee.File.LanguageManager;
-import pl.karpik122.ServerIntegrationwithDicord.Bungee.Timer.Counter;
-import pl.karpik122.ServerIntegrationwithDicord.Bungee.Util.UpdateChecker;
+import pl.karpik122.ServerIntegrationwithDicord.Bungee.File.bungeeConfig;
+import pl.karpik122.ServerIntegrationwithDicord.Bungee.File.bungeeLanguageLoader;
+import pl.karpik122.ServerIntegrationwithDicord.Bungee.File.bungeeLanguageManager;
+import pl.karpik122.ServerIntegrationwithDicord.Bungee.Timer.bungeeCounter;
+import pl.karpik122.ServerIntegrationwithDicord.Bungee.Util.bungeeUpdateChecker;
 
 import java.util.Timer;
 
 
 public class MainBungee extends Plugin {
-    LanguageLoader langLoader;
-    Config config;
+    bungeeLanguageLoader langLoader;
+    bungeeConfig config;
     public static JDA jda;
 
     @SneakyThrows
     @Override
     public void onEnable() {
-        config = Config.getInstance(this);
+        config = bungeeConfig.getInstance(this);
 
         String TOKEN = (String) config.getConfig().get("TOKEN");
-        langLoader = new LanguageLoader(this);
-        LanguageManager.initialize(this);
+        langLoader = new bungeeLanguageLoader(this);
+        bungeeLanguageManager.initialize(this);
 
         String there_is_not_a_new_update = langLoader.getTranslation("there_is_not_a_new_update");
         String there_is_a_new_update = langLoader.getTranslation("there_is_a_new_update");
         String loading = langLoader.getTranslation("loading");
         String Log_in_for = langLoader.getTranslation("Log_in_for");
 
-        new UpdateChecker(this, 111094).getVersion(version -> {
+        new bungeeUpdateChecker(this, 111094).getVersion(version -> {
             if (this.getDescription().getVersion().equals(version)) {
                 getLogger().info(there_is_not_a_new_update);
             } else {
@@ -47,10 +47,10 @@ public class MainBungee extends Plugin {
 
         if (TOKEN == null || TOKEN.equals("BOT_TOKEN")) {
             getLogger().warning("Invalid TOKEN in config.yml file. I turn off the plugin...");
-            timer.schedule(new Counter(this), 0L, 60000L);
+            timer.schedule(new bungeeCounter(this), 0L, 60000L);
             return;
         }
-        timer.schedule(new Counter(this), 0L, 60000L);
+        timer.schedule(new bungeeCounter(this), 0L, 60000L);
         getLogger().info(ChatColor.RED + "Server Integration with Dicord - " + loading);
         runBot();
 

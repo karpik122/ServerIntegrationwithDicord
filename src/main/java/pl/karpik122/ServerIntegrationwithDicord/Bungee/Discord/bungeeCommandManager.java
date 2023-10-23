@@ -10,9 +10,9 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
-import pl.karpik122.ServerIntegrationwithDicord.Bungee.File.LanguageManager;
+import pl.karpik122.ServerIntegrationwithDicord.Bungee.File.bungeeLanguageManager;
 import pl.karpik122.ServerIntegrationwithDicord.Bungee.MainBungee;
-import pl.karpik122.ServerIntegrationwithDicord.Bungee.File.LanguageLoader;
+import pl.karpik122.ServerIntegrationwithDicord.Bungee.File.bungeeLanguageLoader;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,13 +22,13 @@ import java.util.Objects;
 
 import static net.md_5.bungee.config.ConfigurationProvider.getProvider;
 
-public class CommandManager extends ListenerAdapter {
+public class bungeeCommandManager extends ListenerAdapter {
     private final MainBungee plugin;
-    private final LanguageLoader languageLoader;
+    private final bungeeLanguageLoader languageLoader;
 
-    public CommandManager(MainBungee pl) {
+    public bungeeCommandManager(MainBungee pl) {
         this.plugin = pl;
-        languageLoader = LanguageManager.getInstance();
+        languageLoader = bungeeLanguageManager.getInstance();
     }
 
     @Override

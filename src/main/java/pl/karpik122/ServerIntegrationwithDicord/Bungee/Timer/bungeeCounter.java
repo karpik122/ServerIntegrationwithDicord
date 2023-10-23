@@ -10,12 +10,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.TimerTask;
 
-public class Counter extends TimerTask {
+public class bungeeCounter extends TimerTask {
     private final Plugin plugin;
 
-    public Counter(Plugin pl) {
+    public bungeeCounter(Plugin pl) {
         this.plugin = pl;
     }
 
@@ -45,7 +46,7 @@ public class Counter extends TimerTask {
         for (ProxiedPlayer player : players) {
             String playerName = player.getName();
             int playtime = file.getInt(playerName, 0);
-            file.set(playerName, playtime + 1);
+            file.set(playerName, Optional.of(playtime + 1));
         }
 
         try {

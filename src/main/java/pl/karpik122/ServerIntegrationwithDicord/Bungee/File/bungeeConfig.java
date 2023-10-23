@@ -10,11 +10,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class Config {
-    private static Config instance;
+public class bungeeConfig {
+    private static bungeeConfig instance;
     private final Configuration config;
 
-    private Config(MainBungee pl) throws IOException {
+    private bungeeConfig(MainBungee pl) throws IOException {
         // Wczytywanie konfiguracji tutaj
         if (!pl.getDataFolder().exists()) {
             pl.getLogger().info("Created config folder: " + pl.getDataFolder().mkdir());
@@ -32,9 +32,9 @@ public class Config {
 
     }
 
-    public static Config getInstance(MainBungee pl) throws IOException {
+    public static bungeeConfig getInstance(MainBungee pl) throws IOException {
         if (instance == null) {
-            instance = new Config(pl);
+            instance = new bungeeConfig(pl);
         }
         return instance;
     }

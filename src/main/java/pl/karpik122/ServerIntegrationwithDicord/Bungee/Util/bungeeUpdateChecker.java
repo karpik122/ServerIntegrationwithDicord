@@ -1,7 +1,7 @@
 package pl.karpik122.ServerIntegrationwithDicord.Bungee.Util;
 
-import pl.karpik122.ServerIntegrationwithDicord.Bungee.File.LanguageLoader;
-import pl.karpik122.ServerIntegrationwithDicord.Bungee.File.LanguageManager;
+import pl.karpik122.ServerIntegrationwithDicord.Bungee.File.bungeeLanguageLoader;
+import pl.karpik122.ServerIntegrationwithDicord.Bungee.File.bungeeLanguageManager;
 import pl.karpik122.ServerIntegrationwithDicord.Bungee.MainBungee;
 
 import java.io.IOException;
@@ -10,16 +10,16 @@ import java.net.URL;
 import java.util.Scanner;
 import java.util.function.Consumer;
 
-public class UpdateChecker {
+public class bungeeUpdateChecker {
     private final MainBungee plugin;
     private final int resourceId;
-    private final LanguageLoader languageLoader;
+    private final bungeeLanguageLoader languageLoader;
 
 
-    public UpdateChecker(MainBungee plugin, int resourceId) {
+    public bungeeUpdateChecker(MainBungee plugin, int resourceId) {
         this.plugin = plugin;
         this.resourceId = resourceId;
-        this.languageLoader = LanguageManager.getInstance();
+        this.languageLoader = bungeeLanguageManager.getInstance();
     }
 
     public void getVersion(final Consumer<String> consumer) {
