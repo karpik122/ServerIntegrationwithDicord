@@ -23,11 +23,10 @@ import java.util.Objects;
 import static net.md_5.bungee.config.ConfigurationProvider.getProvider;
 
 public class bungeeCommandManager extends ListenerAdapter {
-    private final MainBungee plugin;
+    MainBungee plugin;
     private final bungeeLanguageLoader languageLoader;
 
-    public bungeeCommandManager(MainBungee pl) {
-        this.plugin = pl;
+    public bungeeCommandManager() {
         languageLoader = bungeeLanguageManager.getInstance();
     }
 

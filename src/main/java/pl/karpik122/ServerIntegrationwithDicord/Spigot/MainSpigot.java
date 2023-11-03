@@ -22,6 +22,7 @@ import pl.karpik122.ServerIntegrationwithDicord.Spigot.Util.UpdateChecker;
 
 import java.util.Timer;
 
+
 public final class MainSpigot extends JavaPlugin implements Listener {
     private final LanguageLoader langLoader;
 
@@ -43,6 +44,7 @@ public final class MainSpigot extends JavaPlugin implements Listener {
 
         config.options().copyDefaults(true);
         saveDefaultConfig();
+
         LanguageLoader langLoader = new LanguageLoader(this);
         LanguageManager.init(langLoader);
 
@@ -62,6 +64,7 @@ public final class MainSpigot extends JavaPlugin implements Listener {
             }
         });
 
+
         getCommand("discordintegration").setExecutor(new DiscordIntegrationAdminCommand(this));
         getCommand("discordintegration").setTabCompleter(new DiscordIntegrationAdminTabCompleter());
 
@@ -69,6 +72,7 @@ public final class MainSpigot extends JavaPlugin implements Listener {
             getLogger().warning("Invalid TOKEN in config.yml file. I turn off the plugin...");
             timer.schedule(new Counter(this), 0L, 60000L);
             return;
+
         }
 
         Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Server Integration with Dicord - " + loading);

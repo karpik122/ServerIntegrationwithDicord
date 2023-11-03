@@ -6,11 +6,15 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.plugin.Plugin;
+import pl.karpik122.ServerIntegrationwithDicord.Bungee.Discord.bungeeCommandManager;
+import pl.karpik122.ServerIntegrationwithDicord.Bungee.Events.bungeeStatusUpdater;
 import pl.karpik122.ServerIntegrationwithDicord.Bungee.File.bungeeConfig;
 import pl.karpik122.ServerIntegrationwithDicord.Bungee.File.bungeeLanguageLoader;
 import pl.karpik122.ServerIntegrationwithDicord.Bungee.File.bungeeLanguageManager;
+import pl.karpik122.ServerIntegrationwithDicord.Bungee.Logi.bungeeCommandLogger;
 import pl.karpik122.ServerIntegrationwithDicord.Bungee.Timer.bungeeCounter;
 import pl.karpik122.ServerIntegrationwithDicord.Bungee.Util.bungeeUpdateChecker;
+import pl.karpik122.ServerIntegrationwithDicord.Spigot.Events.StatusUpdater;
 
 import java.util.Timer;
 
@@ -72,6 +76,8 @@ public class MainBungee extends Plugin {
         getLogger().info("");
 
 
+        getProxy().getPluginManager().registerListener(this, new bungeeCommandLogger());
+        timer.schedule(new bungeeStatusUpdater(), 0L, 30000L);
     }
 
     @Override
@@ -101,7 +107,7 @@ public class MainBungee extends Plugin {
                             GatewayIntent.DIRECT_MESSAGE_TYPING, GatewayIntent.DIRECT_MESSAGES,
                             GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_WEBHOOKS, GatewayIntent.DIRECT_MESSAGE_REACTIONS,
                             GatewayIntent.MESSAGE_CONTENT, GatewayIntent.SCHEDULED_EVENTS)
-                    .addEventListeners()
+                    .addEventListeners(new bungeeCommandManager())
                     .build().awaitReady();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
