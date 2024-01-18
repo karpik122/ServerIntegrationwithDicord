@@ -11,6 +11,7 @@ import pl.karpik122.ServerIntegrationwithDicord.Spigot.MainSpigot;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.TimerTask;
 
 public class Counter extends TimerTask {
@@ -39,11 +40,11 @@ public class Counter extends TimerTask {
 
         for (Object player : players) {
             if (file.get(((Player) player).getName()) == null) {
-                file.set(((Player) player).getName(), 0);
+                file.set(((Player) player).getName(), Optional.of(0));
             }
 
             file.save(f);
-            file.set(((Player) player).getName(), file.getInt(((Player) player).getName()) + 1);
+            file.set(((Player) player).getName(), Optional.of(file.getInt(((Player) player).getName()) + 1));
             file.save(f);
         }
 

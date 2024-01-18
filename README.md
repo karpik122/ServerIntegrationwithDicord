@@ -31,7 +31,7 @@ Discord commands
 
 ![Serwer Integration with Discord stats](https://bstats.org/signatures/bukkit/Serwer%20Integration%20with%20Discord.svg)
 
-My discord server: [Server Discord](https://discord.com/invite/MzfbMUx4JE) [Server MC](https://discord.com/invite/AHWN5kTvcE)
+My discord server: [Server Discord](https://discord.com/invite/vww4TVFajP) [Server MC](https://discord.com/invite/M9hVehD9YG)
 
 
 If you have any questions or suggestions regarding this plugin, feel free to write to me on discord: karpik122

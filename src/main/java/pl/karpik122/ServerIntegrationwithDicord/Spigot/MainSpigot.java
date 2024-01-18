@@ -41,7 +41,6 @@ public final class MainSpigot extends JavaPlugin implements Listener {
 
         Metrics metrics = new Metrics(this, pluginID);
 
-
         config.options().copyDefaults(true);
         saveDefaultConfig();
 

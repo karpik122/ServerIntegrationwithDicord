@@ -119,6 +119,7 @@ public class DiscordIntegrationAdminCommand implements CommandExecutor {
         reload();
     }
 
+
     private void saveReportIdConfig(String reportid) {
         FileConfiguration config = pl.getConfig();
         config.set("report_channel", reportid);
