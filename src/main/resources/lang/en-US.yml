@@ -41,3 +41,4 @@ discord_playtime_enter_player_name: "Player's nickname."
 #Discord
 discord_status: "{player_count} graczy na serwerze."
 notification_from: "SIwD - karpik122#0000."
+im_connecting: "Hey, I'm already connected to the server. \uD83D\uDD0C"

@@ -12,7 +12,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import pl.karpik122.ServerIntegrationwithDicord.Spigot.Commands.DiscordIntegrationAdminCommand;
 import pl.karpik122.ServerIntegrationwithDicord.Spigot.Commands.DiscordIntegrationAdminTabCompleter;
 import pl.karpik122.ServerIntegrationwithDicord.Spigot.Commands.Reports;
-import pl.karpik122.ServerIntegrationwithDicord.Spigot.Discord.CommandManager;
+import pl.karpik122.ServerIntegrationwithDicord.Spigot.Discord.Commands.CommandExecutor;
+import pl.karpik122.ServerIntegrationwithDicord.Spigot.Discord.Commands.cmd.PlayTime;
+import pl.karpik122.ServerIntegrationwithDicord.Spigot.Discord.Event.Start;
 import pl.karpik122.ServerIntegrationwithDicord.Spigot.Events.StatusUpdater;
 import pl.karpik122.ServerIntegrationwithDicord.Spigot.File.LanguageLoader;
 import pl.karpik122.ServerIntegrationwithDicord.Spigot.File.LanguageManager;
@@ -34,6 +36,10 @@ public final class MainSpigot extends JavaPlugin implements Listener {
 
     public MainSpigot() {
         langLoader = LanguageManager.getInstance();
+    }
+
+    public static MainSpigot getPlugin() {
+        return getPlugin(MainSpigot.class);
     }
 
     @Override
@@ -126,13 +132,16 @@ public final class MainSpigot extends JavaPlugin implements Listener {
     }
     public void runBot() {
         try {
-            jda = JDABuilder.createDefault(TOKEN, GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_EMOJIS_AND_STICKERS,
+            CommandExecutor command = new CommandExecutor();
+            command.add(new PlayTime());
+             jda = JDABuilder.createDefault(TOKEN, GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_EMOJIS_AND_STICKERS,
                             GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.GUILD_INVITES,
                              GatewayIntent.GUILD_INVITES, GatewayIntent.GUILD_MESSAGE_REACTIONS,
                             GatewayIntent.DIRECT_MESSAGE_TYPING, GatewayIntent.DIRECT_MESSAGES,
                             GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_WEBHOOKS, GatewayIntent.DIRECT_MESSAGE_REACTIONS,
                             GatewayIntent.MESSAGE_CONTENT, GatewayIntent.SCHEDULED_EVENTS)
-                    .addEventListeners(new CommandManager(this))
+                     .setAutoReconnect(true)
+                    .addEventListeners(command, new Start(this))
                     .build().awaitReady();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
