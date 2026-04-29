@@ -2,7 +2,8 @@
 This plugin is designed to make the administration's work more pleasant and efficient by sending reports to a selected discord channel.
 - Logs of commands used by players (in addition to /login, /register, /changepassword etc.).
 It also offers a plugin to check how much time players have spent on the server
-
+- /link now you can link your discord account with you Minecraft account.
+- Vault integration now you can check money of you Minecraft account.
  
 
  
@@ -31,7 +32,7 @@ Discord commands
 
 ![Serwer Integration with Discord stats](https://bstats.org/signatures/bukkit/Serwer%20Integration%20with%20Discord.svg)
 
-My discord server: [Server Discord](https://discord.com/invite/vww4TVFajP) [Server MC](https://discord.com/invite/M9hVehD9YG)
+My discord server: [Server Discord]([https://discord.com/invite/M9hVehD9YG](https://discord.gg/Rzq3fHXPAs)) [Server MC]([https://discord.com/invite/M9hVehD9YG](https://discord.gg/Rzq3fHXPAs))
 
 
 If you have any questions or suggestions regarding this plugin, feel free to write to me on discord: karpik122
