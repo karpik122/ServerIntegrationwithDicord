@@ -1,0 +1,12 @@
+#Token of your discord bot
+TOKEN: "TOKEN"
+
+#id of text channel in your server Discord
+report_channel: 'id'
+id_log_channel: 'id'
+guildID: 'id'
+
+# pl-PL, en-US
+language: "en-US"
+
+banWorlds: {  }

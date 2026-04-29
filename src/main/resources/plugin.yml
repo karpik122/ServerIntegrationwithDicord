@@ -1,0 +1,29 @@
+name: ServerIntegrationwithDicord
+main: pl.karpik122.serverIntegrationwithDicord.Spigot.MainSpigot
+version: 1.7
+api-version: 1.21
+author: karpik122
+prefix: ServerIntegrationwithDicord
+description: Plugin for minecraft server
+commands:
+  report:
+
+  link:
+    description: Generuje kod do Discorda
+
+  discordintegration:
+    permission: serverintegrationwithdicord.admin
+
+    reload:
+      permission: serverintegrationwithdicord.admin
+
+    log:
+      permission: serverintegrationwithdicord.admin
+    report:
+      permission: serverintegrationwithdicord.admin
+    token:
+      permission: serverintegrationwithdicord.admin
+
+permissions:
+  serverintegrationwithdicord.admin:
+    default: op
