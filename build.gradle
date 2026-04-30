@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'pl.karpik122'
-version = '1.7'
+version = '1.6'
 
 repositories {
     mavenCentral()
