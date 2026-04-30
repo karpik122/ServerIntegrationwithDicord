@@ -89,6 +89,7 @@ public class DiscordIntegrationAdminCommand implements CommandExecutor {
     }
 
     public void reload() {
+        pl.stopBot();
 
         Bukkit.getConsoleSender().sendMessage("");
         Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░");

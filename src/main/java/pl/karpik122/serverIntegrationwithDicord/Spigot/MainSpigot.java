@@ -166,6 +166,10 @@ public final class MainSpigot extends JavaPlugin implements Listener {
         }
     }
 
+    public void stopBot() {
+        jda.shutdown();
+    }
+
     private boolean setupEconomy() {
         if (getServer().getPluginManager().getPlugin("Vault") == null) {
             return false;
