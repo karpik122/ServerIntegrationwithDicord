@@ -1,5 +1,6 @@
 package pl.karpik122.serverIntegrationwithDicord.Spigot.Discord.Commands.cmd;
 
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -10,7 +11,9 @@ import pl.karpik122.serverIntegrationwithDicord.Spigot.File.LanguageManager;
 import pl.karpik122.serverIntegrationwithDicord.Spigot.MainSpigot;
 
 
+import java.awt.*;
 import java.io.File;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -50,6 +53,8 @@ public class PlayTime implements ICommand {
         String no_such_player = languageLoader.getTranslation("playtime_null_player");
         String min_in_server = languageLoader.getTranslation("playtime_minutes_on_server");
         String hours_in_server = languageLoader.getTranslation("playtime_hours_on_server");
+        String notification_from = languageLoader.getTranslation("notification_from");
+
         String player = Objects.requireNonNull(event.getOption(nick)).getAsString();
 
         File f = new File(plugin.getDataFolder(), "playtime.yml");
@@ -69,10 +74,18 @@ public class PlayTime implements ICommand {
         hours_in_server = hours_in_server.replace("{minutes}", String.valueOf(minutes));
         hours_in_server = hours_in_server.replace("{player}", player);
 
+        EmbedBuilder emb = new EmbedBuilder();
+        emb.setAuthor(player, null, "https://minotar.net/helm/" + player + "/300.png");
         if (h == 0) {
-            event.reply(min_in_server).queue();
-            return;
+            emb.setDescription(min_in_server);
+
+        } else {
+            emb.setDescription(hours_in_server);
+
         }
-        event.reply(hours_in_server).queue();
+        emb.setColor(Color.YELLOW);
+        emb.setFooter(notification_from);
+        emb.setTimestamp(Instant.now());
+        event.replyEmbeds(emb.build()).queue();
     }
 }

@@ -33,10 +33,12 @@ public class Start extends ListenerAdapter {
                 Objects.requireNonNull(config.get("id_log_channel")));
 
         String title = langLoader.getTranslation("im_connecting");
+        String notification_from = langLoader.getTranslation("notification_from");
 
         EmbedBuilder emb = new EmbedBuilder();
         emb.setColor(Color.green);
         emb.setTitle(title);
+        emb.setFooter(notification_from);
         emb.setTimestamp(Instant.now());
 
         MessageEmbed embed = emb.build();

@@ -15,20 +15,20 @@ public class DiscordIntegrationAdminTabCompleter implements TabCompleter {
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
         List<String> completions = new ArrayList<>();
-        if (command.getName().equalsIgnoreCase("discordintegration")) {
+        if (sender.hasPermission("serverintegrationwithdicord.admin")) {
+            if (command.getName().equalsIgnoreCase("discordintegration")) {
 
-            if (args.length == 1) {
-                completions.add("reload");
-                completions.add("past");
+                if (args.length == 1) {
+                    completions.add("reload");
+                    completions.add("past");
+                } else if (args.length == 2 && !"reload".startsWith(args[0])) {
+                    completions.add("token");
+                    completions.add("log");
+                    completions.add("report");
+                }
             }
-
-            else if (args.length == 2 && !"reload".startsWith(args[0])) {
-                completions.add("token");
-                completions.add("log");
-                completions.add("report");
-            }
+            return completions;
         }
-        return completions;
+        return null;
     }
-
 }

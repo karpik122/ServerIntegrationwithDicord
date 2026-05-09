@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'pl.karpik122'
-version = '1.6'
+version = '1.7'
 
 repositories {
     mavenCentral()
@@ -63,4 +63,8 @@ processResources {
     filesMatching('plugin.yml') {
         expand props
     }
+}
+
+shadowJar {
+    archiveFileName.set(project.name + "-" + archiveVersion.get() + ".jar")
 }

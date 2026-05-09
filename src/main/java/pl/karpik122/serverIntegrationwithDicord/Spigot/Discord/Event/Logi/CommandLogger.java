@@ -13,15 +13,16 @@ import pl.karpik122.serverIntegrationwithDicord.Spigot.MainSpigot;
 import java.awt.*;
 import java.time.Instant;
 
-public class CommandLogger implements Listener {
+import static pl.karpik122.serverIntegrationwithDicord.Spigot.MainSpigot.jda;
 
+public class CommandLogger implements Listener {
     private final MainSpigot plugin;
     private final LanguageLoader languageLoader;
     public CommandLogger(MainSpigot pl) {
         this.plugin = pl;
         languageLoader = LanguageManager.getInstance();
     }
-    JDA jda = MainSpigot.jda;
+
 
     @EventHandler
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
@@ -32,6 +33,9 @@ public class CommandLogger implements Listener {
         String commandlog_player = languageLoader.getTranslation("commandlog_player");
         String notification_from = languageLoader.getTranslation("notification_from");
 
+        if (id_log_channel == null) {
+            return;
+        }
 
         if (!event.getMessage().contains("/login") && !event.getMessage().contains("/l") &&
                 !event.getMessage().contains("/register") && !event.getMessage().contains("/r") &&
@@ -49,10 +53,7 @@ public class CommandLogger implements Listener {
             eb.setFooter(notification_from);
             eb.setTimestamp(Instant.now());
 
-            assert id_log_channel != null;
             TextChannel tc = jda.getTextChannelById(id_log_channel);
-
-            assert tc != null;
             tc.sendMessageEmbeds(eb.build()).queue();
         }
     }

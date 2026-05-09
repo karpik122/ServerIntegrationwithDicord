@@ -1,10 +1,27 @@
-#Token of your discord bot
+# Token of your discord bot
 TOKEN: "TOKEN"
 
-#id of text channel in your server Discord
+# id of text channel in your server Discord
+# Channel for report and other
 report_channel: 'id'
+# Log channel id (command log)
 id_log_channel: 'id'
+# Guild id
 guildID: 'id'
 
 # pl-PL, en-US
 language: "en-US"
+
+# Admin section
+# Buttons for kick and Ban
+discordadmininteraction: false
+
+# ID of admin rang
+admindiscordid:
+  -
+
+# List of words that it will be non-friendly
+flag: false
+flagwords:
+  - wrong sentence
+  - wrong sentence2

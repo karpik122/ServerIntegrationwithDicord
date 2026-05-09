@@ -28,6 +28,7 @@ unable_to_check_for_update: "I can't check the plugin version."
 there_is_not_a_new_update: "There is no new version of the plugin at the moment."
 there_is_a_new_update: "A new version of the plugin is available."
 Log_in_for: "Logged in as {botName} ({botID})."
+error_token: "The token was not entered correctly or this is the first installation of the plugin!"
 
 #Playtime
 playtime_minutes_on_server: "**{player} plays {minutes} min. on the server."
@@ -37,6 +38,12 @@ discord_playtime_nick: "nick"
 discord_playtime: "playtime"
 discord_playtime_description: "Check how long a particular player has been playing on the server."
 discord_playtime_enter_player_name: "Player's nickname."
+#Top play time
+playtime_command: "playtimetop"
+playtime_description: "top 5 players with the most time spent"
+playtime_top5: "Top 5 Playtime"
+playtime_h: "hours"
+playtime_min: "minutes"
 
 #Account
 account_link: "§aYour account linking code is: §e§n"
@@ -55,3 +62,8 @@ isnt_connectet_discord: "Your account is not linked! Use the /link command in Mi
 have_in_account: "You have in your account: "
 description_money: "Shows the game account balance"
 code_generate: "Kod wygenerowany w grze"
+
+#Flag word
+found: "⚠️ Forbidden word detected!"
+word: "Word"
+fullmessage: "Full message"

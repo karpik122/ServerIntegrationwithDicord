@@ -40,7 +40,6 @@ public class Economy {
         }
     }
 
-
     public static UUID getUid(String discordID) {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 
@@ -51,7 +50,6 @@ public class Economy {
                 return UUID.fromString(key);
             }
         }
-
         // Jeśli nie znajdzie konta, nie zwraca niczego
         return null;
     }

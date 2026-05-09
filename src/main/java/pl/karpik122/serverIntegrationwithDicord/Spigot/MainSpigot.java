@@ -19,6 +19,9 @@ import pl.karpik122.serverIntegrationwithDicord.Spigot.Discord.Commands.CommandE
 import pl.karpik122.serverIntegrationwithDicord.Spigot.Discord.Commands.cmd.Link;
 import pl.karpik122.serverIntegrationwithDicord.Spigot.Discord.Commands.cmd.Money;
 import pl.karpik122.serverIntegrationwithDicord.Spigot.Discord.Commands.cmd.PlayTime;
+import pl.karpik122.serverIntegrationwithDicord.Spigot.Discord.Commands.cmd.PlayTimeTop;
+import pl.karpik122.serverIntegrationwithDicord.Spigot.Discord.Event.Buttons;
+import pl.karpik122.serverIntegrationwithDicord.Spigot.Discord.Event.ChatFlagWords;
 import pl.karpik122.serverIntegrationwithDicord.Spigot.Discord.Event.Start;
 import pl.karpik122.serverIntegrationwithDicord.Spigot.Discord.Event.StatusUpdater;
 import pl.karpik122.serverIntegrationwithDicord.Spigot.File.LanguageLoader;
@@ -41,10 +44,7 @@ public final class MainSpigot extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-
         metrics = new Metrics(this, pluginID);
-
-
         config.options().copyDefaults(true);
         saveDefaultConfig();
 
@@ -54,16 +54,14 @@ public final class MainSpigot extends JavaPlugin implements Listener {
         String there_is_not_a_new_update = langLoader.getTranslation("there_is_not_a_new_update");
         String there_is_a_new_update = langLoader.getTranslation("there_is_a_new_update");
         String loading = langLoader.getTranslation("loading");
-        String Log_in_for = langLoader.getTranslation("Log_in_for");
 
-        Timer timer = new Timer();
 
-        new UpdateChecker(this, 111094).getVersion(version -> {
+        new UpdateChecker(this).getVersion(version -> {
             if (this.getDescription().getVersion().equals(version)) {
                 Bukkit.getConsoleSender().sendMessage(there_is_not_a_new_update);
             } else {
                 Bukkit.getConsoleSender().sendMessage(there_is_a_new_update);
-                Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "https://www.spigotmc.org/resources/server-integration-with-discord.111094/");
+                Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "https://www.curseforge.com/minecraft/bukkit-plugins/server-integration-with-discord");
             }
         });
 
@@ -71,46 +69,38 @@ public final class MainSpigot extends JavaPlugin implements Listener {
         getCommand("discordintegration").setExecutor(new DiscordIntegrationAdminCommand(this));
         getCommand("discordintegration").setTabCompleter(new DiscordIntegrationAdminTabCompleter());
 
-        if (TOKEN == null || TOKEN.equals("BOT_TOKEN")) {
-            getLogger().warning("Invalid TOKEN in config.yml file. I turn off the plugin...");
-            timer.schedule(new Counter(this), 0L, 60000L);
-            return;
-
-        }
 
         Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Server Integration with Dicord - " + loading);
         runBot();
 
-        Log_in_for = Log_in_for.replace("{botName}", jda.getSelfUser().getName());
-        Log_in_for = Log_in_for.replace("{botID}",  jda.getSelfUser().getId());
-
-        Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "Server Integration with Dicord - " + Log_in_for);
 
         Bukkit.getConsoleSender().sendMessage("");
         Bukkit.getConsoleSender().sendMessage("");
-        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░");
-        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░██████╗░██╗░░██╗░░░░░░░██╗░██████╗░");
-        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "██╔════╝░██║░░██║░░██╗░░██║░██╔══██╗");
-        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "╚█████╗░░██║░░╚██╗████╗██╔╝░██║░░██║");
-        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░╚═══██╗░██║░░░████╔═████║░░██║░░██║");
-        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "██████╔╝░██║░░░╚██╔╝░╚██╔╝░░██████╔╝");
-        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "╚═════╝░░╚═╝░░░░╚═╝░░░╚═╝░░░╚═════╝░");
-        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░░██████╗░██╗░░██╗░░░░░░░██╗░██████╗░░");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░██╔════╝░██║░░██║░░██╗░░██║░██╔══██╗░");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░╚█████╗░░██║░░╚██╗████╗██╔╝░██║░░██║░");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░░╚═══██╗░██║░░░████╔═████║░░██║░░██║░");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░██████╔╝░██║░░░╚██╔╝░╚██╔╝░░██████╔╝░");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░╚═════╝░░╚═╝░░░░╚═╝░░░╚═╝░░░╚═════╝░░");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░");
         Bukkit.getConsoleSender().sendMessage("");
 
-
+        // Events
         getServer().getPluginManager().registerEvents(this, this);
         getServer().getPluginManager().registerEvents(new CommandLogger(this), this);
+
+        if (Boolean.parseBoolean(config.getString("flag"))) {
+            getServer().getPluginManager().registerEvents(new ChatFlagWords(this), this);
+        } else {
+            return;
+        }
+        getCommand("report").setExecutor(new Reports(this));
         getCommand("link").setExecutor(new AccountLink());
 
         if (setupEconomy()) {
             econ.isEnabled();
         }
-
-        new Reports(this);
-
-        timer.schedule(new StatusUpdater(this), 0L, 30000L);
-        timer.schedule(new Counter(this), 0L, 60000L);
     }
 
 
@@ -121,49 +111,80 @@ public final class MainSpigot extends JavaPlugin implements Listener {
 
         Metrics metrics = new Metrics(this, pluginID);
         metrics.shutdown();
-        if (jda != null) {
+        if (MainSpigot.jda != null && MainSpigot.jda.getStatus() == JDA.Status.CONNECTED) {
             jda.shutdown();
         }
         Bukkit.getConsoleSender().sendMessage("");
         Bukkit.getConsoleSender().sendMessage("");
-        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░");
-        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░██████╗░██╗░░██╗░░░░░░░██╗░██████╗░");
-        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "██╔════╝░██║░░██║░░██╗░░██║░██╔══██╗");
-        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "╚█████╗░░██║░░╚██╗████╗██╔╝░██║░░██║");
-        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░╚═══██╗░██║░░░████╔═████║░░██║░░██║");
-        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "██████╔╝░██║░░░╚██╔╝░╚██╔╝░░██████╔╝");
-        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "╚═════╝░░╚═╝░░░░╚═╝░░░╚═╝░░░╚═════╝░");
-        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░░██████╗░██╗░░██╗░░░░░░░██╗░██████╗░░");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░██╔════╝░██║░░██║░░██╗░░██║░██╔══██╗░");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░╚█████╗░░██║░░╚██╗████╗██╔╝░██║░░██║░");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░░╚═══██╗░██║░░░████╔═████║░░██║░░██║░");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░██████╔╝░██║░░░╚██╔╝░╚██╔╝░░██████╔╝░");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░╚═════╝░░╚═╝░░░░╚═╝░░░╚═╝░░░╚═════╝░░");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░");
         Bukkit.getConsoleSender().sendMessage("");
         Bukkit.getConsoleSender().sendMessage(ChatColor.RED + pluginOff);
         metrics.shutdown();
     }
 
     public void runBot() {
-        try {
-            CommandExecutor command = new CommandExecutor();
-            command.add(new PlayTime(this));
-            command.add(new Link(this));
-            if (setupEconomy()) {
-                command.add(new Money());
-            }
-            // 1. Przygotuj bota i dodaj podstawowe komendy
-             jda = JDABuilder.createDefault(TOKEN,
-                            GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_MESSAGES,
-                            GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.GUILD_INVITES,
-                            GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.DIRECT_MESSAGE_TYPING,
-                            GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_PRESENCES,
-                            GatewayIntent.GUILD_WEBHOOKS, GatewayIntent.DIRECT_MESSAGE_REACTIONS,
-                            GatewayIntent.MESSAGE_CONTENT, GatewayIntent.SCHEDULED_EVENTS,
-                            GatewayIntent.GUILD_EXPRESSIONS)
-                    .setAutoReconnect(true)
-                    .addEventListeners(command, new Start(this)).build();
-            // 3. Uruchom bota
-             jda.awaitReady();
-
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        if (TOKEN == null || TOKEN.isEmpty() || TOKEN.equals("TOKEN")) {
+            Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "INVALID TOKEN FOR BOT");
+            return;
         }
+
+        LanguageLoader langLoader = LanguageManager.getInstance();
+
+        // Uruchamiamy w tle, żeby NIE ZACIĄĆ serwera!
+        Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
+            try {
+                CommandExecutor command = new CommandExecutor();
+                command.add(new PlayTime(this));
+                command.add(new Link(this));
+                command.add(new PlayTimeTop(this));
+                if (setupEconomy()) {
+                    command.add(new Money());
+                }
+
+                jda = JDABuilder.createDefault(TOKEN,
+                                GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_MESSAGES,
+                                GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.GUILD_INVITES,
+                                GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.DIRECT_MESSAGE_TYPING,
+                                GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_PRESENCES,
+                                GatewayIntent.GUILD_WEBHOOKS, GatewayIntent.DIRECT_MESSAGE_REACTIONS,
+                                GatewayIntent.MESSAGE_CONTENT, GatewayIntent.SCHEDULED_EVENTS,
+                                GatewayIntent.GUILD_EXPRESSIONS)
+                        .setAutoReconnect(true)
+                        .addEventListeners(command, new Start(this)).build();
+
+                jda.awaitReady(); // Czekamy, aż bot się w pełni uruchomi
+
+                jda.addEventListener(new Buttons(this));
+                // TERAZ sprawdzamy, czy bot na pewno działa i pobieramy jego dane
+                if (jda != null) {
+                    Timer timer = new Timer();
+                    timer.schedule(new StatusUpdater(this), 0L, 30000L);
+                    timer.schedule(new Counter(this), 0L, 60000L);
+
+                    String logInFor = langLoader.getTranslation("Log_in_for");
+                    logInFor = logInFor.replace("{botName}", jda.getSelfUser().getName());
+                    logInFor = logInFor.replace("{botID}", jda.getSelfUser().getId());
+
+                    Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "Server Integration with Dicord - " + logInFor);
+                }
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Przerwano łączenie bota Discord.");
+            } catch (Exception e) {
+                // Przechwytujemy też inne błędy (np. zły token)
+                String errorToken = langLoader.getTranslation("error_token");
+                Bukkit.getConsoleSender().sendMessage(ChatColor.RED + errorToken);
+                Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Błąd JDA: " + e.getMessage());
+            }
+        });
     }
 
     public void stopBot() {

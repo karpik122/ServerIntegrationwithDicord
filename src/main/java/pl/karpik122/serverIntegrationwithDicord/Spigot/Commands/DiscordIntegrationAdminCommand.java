@@ -1,5 +1,6 @@
 package pl.karpik122.serverIntegrationwithDicord.Spigot.Commands;
 
+import net.dv8tion.jda.api.JDA;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -7,9 +8,12 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.jetbrains.annotations.NotNull;
+import pl.karpik122.serverIntegrationwithDicord.Spigot.Discord.Event.ChatFlagWords;
 import pl.karpik122.serverIntegrationwithDicord.Spigot.File.LanguageLoader;
 import pl.karpik122.serverIntegrationwithDicord.Spigot.File.LanguageManager;
 import pl.karpik122.serverIntegrationwithDicord.Spigot.MainSpigot;
+
+import static pl.karpik122.serverIntegrationwithDicord.Spigot.MainSpigot.jda;
 
 
 public class DiscordIntegrationAdminCommand implements CommandExecutor {
@@ -33,76 +37,99 @@ public class DiscordIntegrationAdminCommand implements CommandExecutor {
         String admin_command_past_report = languageLoader.getTranslation("admin_command_past_report");
         String admin_command_accept = languageLoader.getTranslation("admin_command_accept");
 
+        if (sender.hasPermission("serverintegrationwithdicord.admin")) {
 
-
-        if (command.getName().equalsIgnoreCase("discordintegration")) {
-            if (args.length < 1) {
-                sender.sendMessage(ChatColor.RED + "Usage: /discordintegration <reload | past> [token | log | report] <value>");
-                return true;
-            }
-
-            if (args[0].equalsIgnoreCase("reload")) {
-                sender.sendMessage(ChatColor.GREEN + "Reload...");
-                pl.saveConfig();
-                pl.reloadConfig();
-                reload();
-                return true;
-            }
-
-            if (args[0].equalsIgnoreCase("past") && args.length > 1) {
-                if (args[1].equalsIgnoreCase("token") && args.length == 3) {
-                    String discordToken = args[2];
-                    saveTokenToConfig(discordToken);
-                    sender.sendMessage(ChatColor.GREEN + admin_command_accept);
-                    sender.sendMessage(ChatColor.RED + remember_to_restart);
-                    return true;
-                } else if (args[1].equalsIgnoreCase("log") && args.length == 3) {
-                    String logid = args[2];
-                    saveLogIdToConfig(logid);
-                    sender.sendMessage(ChatColor.GREEN + admin_command_accept);
-                    sender.sendMessage(ChatColor.RED + remember_to_restart);
-                    return true;
-                } else if (args[1].equalsIgnoreCase("report") && args.length == 3) {
-                    String reportid = args[2];
-                    saveReportIdConfig(reportid);
-                    sender.sendMessage(ChatColor.GREEN + admin_command_accept);
-                    sender.sendMessage(ChatColor.RED + remember_to_restart);
-                    return true;
-                } else {
-                    sender.sendMessage(ChatColor.YELLOW + admin_command_help);
-                    sender.sendMessage(ChatColor.GREEN + admin_command_reload);
-                    sender.sendMessage(ChatColor.GREEN + admin_command_past_token);
-                    sender.sendMessage(ChatColor.GREEN + admin_command_past_log);
-                    sender.sendMessage(ChatColor.GREEN + admin_command_past_report);
+            if (command.getName().equalsIgnoreCase("discordintegration")) {
+                if (args.length < 1) {
+                    sender.sendMessage(ChatColor.RED + "Usage: /discordintegration <reload | past> [token | log | report] <value>");
                     return true;
                 }
-            }
 
-            sender.sendMessage(ChatColor.YELLOW + admin_command_help);
-            sender.sendMessage(ChatColor.GREEN + admin_command_reload);
-            sender.sendMessage(ChatColor.GREEN + admin_command_past_token);
-            sender.sendMessage(ChatColor.GREEN + admin_command_past_log);
-            sender.sendMessage(ChatColor.GREEN + admin_command_past_report);
-            return true;
+                if (args[0].equalsIgnoreCase("reload")) {
+                    sender.sendMessage(ChatColor.GREEN + "Reload...");
+                    sender.sendMessage("");
+                    sender.sendMessage("");
+                    sender.sendMessage(ChatColor.AQUA + "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░");
+                    sender.sendMessage(ChatColor.AQUA + "░░██████╗░██╗░░██╗░░░░░░░██╗░██████╗░░");
+                    sender.sendMessage(ChatColor.AQUA + "░██╔════╝░██║░░██║░░██╗░░██║░██╔══██╗░");
+                    sender.sendMessage(ChatColor.AQUA + "░╚█████╗░░██║░░╚██╗████╗██╔╝░██║░░██║░");
+                    sender.sendMessage(ChatColor.AQUA + "░░╚═══██╗░██║░░░████╔═████║░░██║░░██║░");
+                    sender.sendMessage(ChatColor.AQUA + "░██████╔╝░██║░░░╚██╔╝░╚██╔╝░░██████╔╝░");
+                    sender.sendMessage(ChatColor.AQUA + "░╚═════╝░░╚═╝░░░░╚═╝░░░╚═╝░░░╚═════╝░░");
+                    sender.sendMessage(ChatColor.AQUA + "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░");
+                    sender.sendMessage("");
+                    pl.saveConfig();
+                    pl.reloadConfig();
+                    reload();
+                    sender.sendMessage(ChatColor.GREEN + "Success");
+                    return true;
+                }
+
+                if (args[0].equalsIgnoreCase("past") && args.length > 1) {
+                    if (args[1].equalsIgnoreCase("token") && args.length == 3) {
+                        String discordToken = args[2];
+                        saveTokenToConfig(discordToken);
+                        sender.sendMessage(ChatColor.GREEN + admin_command_accept);
+                        sender.sendMessage(ChatColor.RED + remember_to_restart);
+                        return true;
+                    } else if (args[1].equalsIgnoreCase("log") && args.length == 3) {
+                        String logid = args[2];
+                        saveLogIdToConfig(logid);
+                        sender.sendMessage(ChatColor.GREEN + admin_command_accept);
+                        sender.sendMessage(ChatColor.RED + remember_to_restart);
+                        return true;
+                    } else if (args[1].equalsIgnoreCase("report") && args.length == 3) {
+                        String reportid = args[2];
+                        saveReportIdConfig(reportid);
+                        sender.sendMessage(ChatColor.GREEN + admin_command_accept);
+                        sender.sendMessage(ChatColor.RED + remember_to_restart);
+                        return true;
+                    } else {
+                        sender.sendMessage(ChatColor.YELLOW + admin_command_help);
+                        sender.sendMessage(ChatColor.GREEN + admin_command_reload);
+                        sender.sendMessage(ChatColor.GREEN + admin_command_past_token);
+                        sender.sendMessage(ChatColor.GREEN + admin_command_past_log);
+                        sender.sendMessage(ChatColor.GREEN + admin_command_past_report);
+                        return true;
+                    }
+                }
+
+                sender.sendMessage(ChatColor.YELLOW + admin_command_help);
+                sender.sendMessage(ChatColor.GREEN + admin_command_reload);
+                sender.sendMessage(ChatColor.GREEN + admin_command_past_token);
+                sender.sendMessage(ChatColor.GREEN + admin_command_past_log);
+                sender.sendMessage(ChatColor.GREEN + admin_command_past_report);
+                return true;
+            }
         }
         return false;
     }
 
     public void reload() {
-        pl.stopBot();
+        if (MainSpigot.jda != null && MainSpigot.jda.getStatus() == JDA.Status.CONNECTED) {
+            jda.shutdown();
+        } else {
+            return;
+        }
+
+        pl.reloadConfig();
+        new ChatFlagWords(pl).reloadWords();
 
         Bukkit.getConsoleSender().sendMessage("");
-        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░");
-        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░██████╗░██╗░░██╗░░░░░░░██╗░██████╗░");
-        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "██╔════╝░██║░░██║░░██╗░░██║░██╔══██╗");
-        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "╚█████╗░░██║░░╚██╗████╗██╔╝░██║░░██║");
-        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░╚═══██╗░██║░░░████╔═████║░░██║░░██║");
-        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "██████╔╝░██║░░░╚██╔╝░╚██╔╝░░██████╔╝");
-        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "╚═════╝░░╚═╝░░░░╚═╝░░░╚═╝░░░╚═════╝░");
-        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░");
         Bukkit.getConsoleSender().sendMessage("");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░░██████╗░██╗░░██╗░░░░░░░██╗░██████╗░░");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░██╔════╝░██║░░██║░░██╗░░██║░██╔══██╗░");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░╚█████╗░░██║░░╚██╗████╗██╔╝░██║░░██║░");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░░╚═══██╗░██║░░░████╔═████║░░██║░░██║░");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░██████╔╝░██║░░░╚██╔╝░╚██╔╝░░██████╔╝░");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░╚═════╝░░╚═╝░░░░╚═╝░░░╚═╝░░░╚═════╝░░");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░");
+        Bukkit.getConsoleSender().sendMessage("");
+
         Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "Restart");
 
+        languageLoader.reload();
         pl.runBot();
     }
 

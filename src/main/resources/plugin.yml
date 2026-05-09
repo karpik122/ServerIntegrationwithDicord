@@ -1,12 +1,14 @@
 name: ServerIntegrationwithDicord
 main: pl.karpik122.serverIntegrationwithDicord.Spigot.MainSpigot
-version: 1.6
+version: ${version}
 api-version: 1.21
 author: karpik122
 prefix: ServerIntegrationwithDicord
 description: Plugin for minecraft server
 commands:
   report:
+    description: Report user
+
 
   link:
     description: Generuje kod do Discorda
@@ -25,5 +27,13 @@ commands:
       permission: serverintegrationwithdicord.admin
 
 permissions:
-  serverintegrationwithdicord.admin:
-    default: op
+  serverintegrationwithdicord:
+    admin:
+      default: true
+    user:
+      default: false
+
+
+libraries:
+  - net.dv8tion:JDA:6.4.1
+  - org.bstats:bstats-bukkit:3.2.1

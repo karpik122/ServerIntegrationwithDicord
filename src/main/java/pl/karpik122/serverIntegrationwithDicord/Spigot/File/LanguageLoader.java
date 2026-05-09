@@ -27,6 +27,20 @@ public class LanguageLoader {
         }
 
         // Pobiera wszystkie pliki z końcówką .yml z folderu
+       load();
+    }
+
+    // Zwraca tekst dla wybranego języka i klucza
+    public String getTranslation(String key) {
+        Map<String, String> langMap = allTranslations.get(plugin.getConfig().getString("language", "en-US"));
+        if (langMap != null && langMap.containsKey(key)) {
+            return langMap.get(key);
+        }
+        return key;
+    }
+
+    public void load() {
+        File langFolder = new File(plugin.getDataFolder(), "lang");
         File[] files = langFolder.listFiles((dir, name) -> name.endsWith(".yml"));
 
         if (files != null) {
@@ -46,12 +60,8 @@ public class LanguageLoader {
         }
     }
 
-    // Zwraca tekst dla wybranego języka i klucza
-    public String getTranslation(String key) {
-        Map<String, String> langMap = allTranslations.get(plugin.getConfig().getString("language", "en-US"));
-        if (langMap != null && langMap.containsKey(key)) {
-            return langMap.get(key);
-        }
-        return key;
+    public void reload() {
+        allTranslations.clear();
+        load();
     }
 }
