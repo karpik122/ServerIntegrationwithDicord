@@ -13,6 +13,7 @@ admin_command_reload: "/discordintegration reload - Przeładowywuje plugin."
 admin_command_past_token: "/discordintegration past token {Token Bota Discord} - Wkleja token bota do pliku Config.yml."
 admin_command_past_log: "/discordintegration past log {ID kanału discord} - Wkleja Id kanału do logów serwera do pliku Config.yml."
 admin_command_past_report: "/discordintegration past report {ID kanału discord} - Wkleja Id kanału do reportu graczy do pliku Config.yml."
+admin_command_health: "/discordintegration health - Pokazuje diagnostykę runtime (JDA, timery, kanał logów)."
 remember_to_restart: "Pamiętaj o restarcie pluginu."
 admin_command_accept: "Poprawnie zmieniono."
 

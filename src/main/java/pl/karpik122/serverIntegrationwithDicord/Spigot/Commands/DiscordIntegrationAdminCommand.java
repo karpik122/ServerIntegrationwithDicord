@@ -1,6 +1,7 @@
 package pl.karpik122.serverIntegrationwithDicord.Spigot.Commands;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -35,13 +36,14 @@ public class DiscordIntegrationAdminCommand implements CommandExecutor {
         String admin_command_past_token = languageLoader.getTranslation("admin_command_past_token");
         String admin_command_past_log = languageLoader.getTranslation("admin_command_past_log");
         String admin_command_past_report = languageLoader.getTranslation("admin_command_past_report");
+        String admin_command_health = languageLoader.getTranslation("admin_command_health");
         String admin_command_accept = languageLoader.getTranslation("admin_command_accept");
 
         if (sender.hasPermission("serverintegrationwithdicord.admin")) {
 
             if (command.getName().equalsIgnoreCase("discordintegration")) {
                 if (args.length < 1) {
-                    sender.sendMessage(ChatColor.RED + "Usage: /discordintegration <reload | past> [token | log | report] <value>");
+                    sender.sendMessage(ChatColor.RED + "Usage: /discordintegration <reload | health | past> [token | log | report] <value>");
                     return true;
                 }
 
@@ -62,6 +64,11 @@ public class DiscordIntegrationAdminCommand implements CommandExecutor {
                     pl.reloadConfig();
                     reload();
                     sender.sendMessage(ChatColor.GREEN + "Success");
+                    return true;
+                }
+
+                if (args[0].equalsIgnoreCase("health")) {
+                    sendHealthCheck(sender);
                     return true;
                 }
 
@@ -90,6 +97,7 @@ public class DiscordIntegrationAdminCommand implements CommandExecutor {
                         sender.sendMessage(ChatColor.GREEN + admin_command_past_token);
                         sender.sendMessage(ChatColor.GREEN + admin_command_past_log);
                         sender.sendMessage(ChatColor.GREEN + admin_command_past_report);
+                        sender.sendMessage(ChatColor.GREEN + admin_command_health);
                         return true;
                     }
                 }
@@ -99,6 +107,7 @@ public class DiscordIntegrationAdminCommand implements CommandExecutor {
                 sender.sendMessage(ChatColor.GREEN + admin_command_past_token);
                 sender.sendMessage(ChatColor.GREEN + admin_command_past_log);
                 sender.sendMessage(ChatColor.GREEN + admin_command_past_report);
+                sender.sendMessage(ChatColor.GREEN + admin_command_health);
                 return true;
             }
         }
@@ -106,14 +115,9 @@ public class DiscordIntegrationAdminCommand implements CommandExecutor {
     }
 
     public void reload() {
-        if (MainSpigot.jda != null && MainSpigot.jda.getStatus() == JDA.Status.CONNECTED) {
-            jda.shutdown();
-        } else {
-            return;
-        }
+        pl.stopBot();
 
         pl.reloadConfig();
-        new ChatFlagWords(pl).reloadWords();
 
         Bukkit.getConsoleSender().sendMessage("");
         Bukkit.getConsoleSender().sendMessage("");
@@ -131,6 +135,37 @@ public class DiscordIntegrationAdminCommand implements CommandExecutor {
 
         languageLoader.reload();
         pl.runBot();
+    }
+
+    private void sendHealthCheck(CommandSender sender) {
+        String logChannelId = pl.getConfig().getString("id_log_channel", "");
+        boolean logIdConfigured = !logChannelId.isBlank() && !"id".equalsIgnoreCase(logChannelId);
+
+        String jdaStatusName = pl.getJdaStatusName();
+        boolean jdaOnline = jda != null && jda.getStatus() == JDA.Status.CONNECTED;
+
+        boolean logChannelReachable = false;
+        if (jda != null && logIdConfigured) {
+            TextChannel channel = jda.getTextChannelById(logChannelId);
+            logChannelReachable = channel != null;
+        }
+
+        sender.sendMessage(ChatColor.GOLD + "==== Discord Integration Health Check ====");
+        sender.sendMessage(ChatColor.YELLOW + "JDA status: " + statusColor(jdaOnline) + jdaStatusName);
+        sender.sendMessage(ChatColor.YELLOW + "Status timer: " + statusColor(pl.isStatusTimerActive()) + boolText(pl.isStatusTimerActive()));
+        sender.sendMessage(ChatColor.YELLOW + "Counter timer: " + statusColor(pl.isCounterTimerActive()) + boolText(pl.isCounterTimerActive()));
+        sender.sendMessage(ChatColor.YELLOW + "Log channel ID set: " + statusColor(logIdConfigured) + boolText(logIdConfigured));
+        sender.sendMessage(ChatColor.YELLOW + "Log channel reachable: " + statusColor(logChannelReachable) + boolText(logChannelReachable));
+        sender.sendMessage(ChatColor.YELLOW + "Debug mode: " + statusColor(pl.isDebugEnabled()) + boolText(pl.isDebugEnabled()));
+        sender.sendMessage(ChatColor.GRAY + "Configured log channel: " + (logChannelId.isBlank() ? "<empty>" : logChannelId));
+    }
+
+    private ChatColor statusColor(boolean ok) {
+        return ok ? ChatColor.GREEN : ChatColor.RED;
+    }
+
+    private String boolText(boolean value) {
+        return value ? "YES" : "NO";
     }
 
     private void saveTokenToConfig(String token) {

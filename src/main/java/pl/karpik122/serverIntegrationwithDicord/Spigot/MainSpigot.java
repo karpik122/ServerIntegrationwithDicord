@@ -233,6 +233,18 @@ public final class MainSpigot extends JavaPlugin implements Listener {
         return getConfig().getBoolean("debug", false);
     }
 
+    public String getJdaStatusName() {
+        return jda == null ? "OFFLINE" : jda.getStatus().name();
+    }
+
+    public boolean isStatusTimerActive() {
+        return statusTimer != null;
+    }
+
+    public boolean isCounterTimerActive() {
+        return counterTimer != null;
+    }
+
     private void debugLog(String message) {
         if (isDebugEnabled()) {
             getLogger().info("[DEBUG] " + message);
