@@ -11,10 +11,17 @@ import pl.karpik122.serverIntegrationwithDicord.Spigot.MainSpigot;
 
 import java.awt.*;
 import java.time.Instant;
+import java.util.Locale;
+import java.util.Set;
 
 import static pl.karpik122.serverIntegrationwithDicord.Spigot.MainSpigot.jda;
 
 public class CommandLogger implements Listener {
+    private static final Set<String> EXCLUDED_COMMANDS = Set.of(
+            "/login", "/l", "/register", "/r", "/changepassword",
+            "/changepass", "/help", "/discordintegration", "/report"
+    );
+
     private final MainSpigot plugin;
     private final LanguageLoader languageLoader;
     public CommandLogger(MainSpigot pl) {
@@ -36,26 +43,25 @@ public class CommandLogger implements Listener {
             return;
         }
 
-        if (!event.getMessage().contains("/login") && !event.getMessage().contains("/l") &&
-                !event.getMessage().contains("/register") && !event.getMessage().contains("/r") &&
-                !event.getMessage().contains("/changepassword") &&
-                !event.getMessage().contains("/changepass") && !event.getMessage().contains("/help") &&
-                !event.getMessage().contains("/discordintegration") && !event.getMessage().contains("/report")) {
+        String message = event.getMessage().toLowerCase(Locale.ROOT);
+        String commandName = message.split("\\s+", 2)[0];
+        if (EXCLUDED_COMMANDS.contains(commandName)) {
+            return;
+        }
 
-            EmbedBuilder eb = new EmbedBuilder();
+        EmbedBuilder eb = new EmbedBuilder();
 
-            eb.setAuthor(event.getPlayer().getName());
-            eb.setColor(Color.RED);
-            eb.setTitle(commandlog_use_log);
-            eb.addField(commandlog_command, event.getMessage(), true);
-            eb.addField(commandlog_player, event.getPlayer().getName(), true);
-            eb.setFooter(notification_from);
-            eb.setTimestamp(Instant.now());
+        eb.setAuthor(event.getPlayer().getName());
+        eb.setColor(Color.RED);
+        eb.setTitle(commandlog_use_log);
+        eb.addField(commandlog_command, event.getMessage(), true);
+        eb.addField(commandlog_player, event.getPlayer().getName(), true);
+        eb.setFooter(notification_from);
+        eb.setTimestamp(Instant.now());
 
-            TextChannel tc = jda.getTextChannelById(id_log_channel);
-            if (tc != null) {
-                tc.sendMessageEmbeds(eb.build()).queue();
-            }
+        TextChannel tc = jda.getTextChannelById(id_log_channel);
+        if (tc != null) {
+            tc.sendMessageEmbeds(eb.build()).queue();
         }
     }
 }

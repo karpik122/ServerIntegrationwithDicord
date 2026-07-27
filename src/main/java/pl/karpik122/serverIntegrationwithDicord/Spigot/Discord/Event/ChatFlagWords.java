@@ -17,6 +17,7 @@ import pl.karpik122.serverIntegrationwithDicord.Spigot.MainSpigot;
 import java.awt.*;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.List;
 
 import static pl.karpik122.serverIntegrationwithDicord.Spigot.MainSpigot.jda;
@@ -27,6 +28,7 @@ public class ChatFlagWords extends ListenerAdapter implements Listener {
 
     @Getter
     private List<String> flaggedWords = new ArrayList<>();
+    private List<String> normalizedFlaggedWords = new ArrayList<>();
 
     public ChatFlagWords(MainSpigot pl) {
         this.pl = pl;
@@ -40,15 +42,17 @@ public class ChatFlagWords extends ListenerAdapter implements Listener {
     public void onChat(AsyncPlayerChatEvent event) {
         String message = event.getMessage();
         Player playerName = event.getPlayer();
-        String normalizedMessage = message.toLowerCase();
+        String normalizedMessage = message.toLowerCase(Locale.ROOT);
 
         if (flaggedWords.isEmpty()) {
             return;
         }
 
-        for (String word : flaggedWords) {
-            if (normalizedMessage.contains(word.toLowerCase())) {
-                sendDiscordEmbed(playerName, message, word);
+        for (int i = 0; i < normalizedFlaggedWords.size(); i++) {
+            String normalizedWord = normalizedFlaggedWords.get(i);
+            if (normalizedMessage.contains(normalizedWord)) {
+                sendDiscordEmbed(playerName, message, flaggedWords.get(i));
+                break;
             }
         }
     }
@@ -90,10 +94,15 @@ public class ChatFlagWords extends ListenerAdapter implements Listener {
 
     public void loadWords() {
         flaggedWords = pl.getConfig().getStringList("flagwords");
+        normalizedFlaggedWords = new ArrayList<>(flaggedWords.size());
+        for (String word : flaggedWords) {
+            normalizedFlaggedWords.add(word.toLowerCase(Locale.ROOT));
+        }
     }
 
     public void reloadWords() {
         flaggedWords.clear();
+        normalizedFlaggedWords.clear();
         loadWords();
     }
 }

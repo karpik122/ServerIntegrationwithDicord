@@ -7,7 +7,7 @@ import net.milkbowl.vault.economy.Economy;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -67,8 +67,7 @@ public final class MainSpigot extends JavaPlugin implements Listener {
         });
 
 
-        getCommand("discordintegration").setExecutor(new DiscordIntegrationAdminCommand(this));
-        getCommand("discordintegration").setTabCompleter(new DiscordIntegrationAdminTabCompleter());
+        registerDiscordIntegrationCommand();
 
 
         Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Server Integration with Dicord - " + loading);
@@ -95,8 +94,7 @@ public final class MainSpigot extends JavaPlugin implements Listener {
             getServer().getPluginManager().registerEvents(new ChatFlagWords(this), this);
         }
 
-        getCommand("report").setExecutor(new Reports(this));
-        getCommand("link").setExecutor(new AccountLink());
+        registerPlayerCommands();
 
         economyEnabled = setupEconomy();
     }
@@ -138,6 +136,8 @@ public final class MainSpigot extends JavaPlugin implements Listener {
         // Uruchamiamy w tle, żeby NIE ZACIĄĆ serwera!
         Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
             try {
+                debugLog("Starting async Discord bot initialization");
+
                 CommandExecutor command = new CommandExecutor();
                 command.add(new PlayTime(this));
                 command.add(new Link(this));
@@ -158,11 +158,13 @@ public final class MainSpigot extends JavaPlugin implements Listener {
                         .addEventListeners(command, new Start(this)).build();
 
                 jda.awaitReady(); // Czekamy, aż bot się w pełni uruchomi
+                debugLog("Discord bot connected and ready");
 
                 jda.addEventListener(new Buttons(this));
                 // TERAZ sprawdzamy, czy bot na pewno działa i pobieramy jego dane
                 if (jda != null) {
                     startTimers();
+                    debugLog("Background timers started");
 
                     String logInFor = langLoader.getTranslation("Log_in_for");
                     logInFor = logInFor.replace("{botName}", jda.getSelfUser().getName());
@@ -179,6 +181,10 @@ public final class MainSpigot extends JavaPlugin implements Listener {
                 String errorToken = langLoader.getTranslation("error_token");
                 Bukkit.getConsoleSender().sendMessage(ChatColor.RED + errorToken);
                 Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Błąd JDA: " + e.getMessage());
+                if (isDebugEnabled()) {
+                    getLogger().warning("Discord initialization stack trace:");
+                    e.printStackTrace();
+                }
             }
         });
     }
@@ -186,6 +192,7 @@ public final class MainSpigot extends JavaPlugin implements Listener {
     public void stopBot() {
         cancelTimers();
         if (jda != null && jda.getStatus() != JDA.Status.SHUTDOWN) {
+            debugLog("Shutting down Discord bot");
             jda.shutdown();
         }
         jda = null;
@@ -220,5 +227,41 @@ public final class MainSpigot extends JavaPlugin implements Listener {
         }
         econ = rsp.getProvider();
         return econ != null;
+    }
+
+    public boolean isDebugEnabled() {
+        return getConfig().getBoolean("debug", false);
+    }
+
+    private void debugLog(String message) {
+        if (isDebugEnabled()) {
+            getLogger().info("[DEBUG] " + message);
+        }
+    }
+
+    private void registerDiscordIntegrationCommand() {
+        PluginCommand command = getCommand("discordintegration");
+        if (command == null) {
+            getLogger().severe("Command 'discordintegration' is missing in plugin.yml");
+            return;
+        }
+        command.setExecutor(new DiscordIntegrationAdminCommand(this));
+        command.setTabCompleter(new DiscordIntegrationAdminTabCompleter());
+    }
+
+    private void registerPlayerCommands() {
+        PluginCommand reportCommand = getCommand("report");
+        if (reportCommand != null) {
+            reportCommand.setExecutor(new Reports(this));
+        } else {
+            getLogger().severe("Command 'report' is missing in plugin.yml");
+        }
+
+        PluginCommand linkCommand = getCommand("link");
+        if (linkCommand != null) {
+            linkCommand.setExecutor(new AccountLink());
+        } else {
+            getLogger().severe("Command 'link' is missing in plugin.yml");
+        }
     }
 }

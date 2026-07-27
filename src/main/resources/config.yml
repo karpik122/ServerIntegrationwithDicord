@@ -12,6 +12,9 @@ guildID: 'id'
 # pl-PL, en-US
 language: "en-US"
 
+# Enable additional diagnostic logs in console
+debug: false
+
 # Admin section
 # Buttons for kick and Ban
 discordadmininteraction: false
