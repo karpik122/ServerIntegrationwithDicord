@@ -38,15 +38,16 @@ public final class MainSpigot extends JavaPlugin implements Listener {
     private final int pluginID = 30145;
     public static JDA jda;
     Metrics metrics;
-    FileConfiguration config = this.getConfig();
-    String TOKEN = config.getString("TOKEN");
     public static Economy econ = null;
+    private boolean economyEnabled;
+    private Timer statusTimer;
+    private Timer counterTimer;
 
     @Override
     public void onEnable() {
         metrics = new Metrics(this, pluginID);
-        config.options().copyDefaults(true);
         saveDefaultConfig();
+        getConfig().options().copyDefaults(true);
 
         LanguageLoader langLoader = new LanguageLoader(this);
         LanguageManager.init(langLoader);
@@ -90,17 +91,14 @@ public final class MainSpigot extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(this, this);
         getServer().getPluginManager().registerEvents(new CommandLogger(this), this);
 
-        if (Boolean.parseBoolean(config.getString("flag"))) {
+        if (getConfig().getBoolean("flag")) {
             getServer().getPluginManager().registerEvents(new ChatFlagWords(this), this);
-        } else {
-            return;
         }
+
         getCommand("report").setExecutor(new Reports(this));
         getCommand("link").setExecutor(new AccountLink());
 
-        if (setupEconomy()) {
-            econ.isEnabled();
-        }
+        economyEnabled = setupEconomy();
     }
 
 
@@ -109,11 +107,11 @@ public final class MainSpigot extends JavaPlugin implements Listener {
         LanguageManager.init(langLoader);
         String pluginOff = langLoader.getTranslation("Plugin_off");
 
-        Metrics metrics = new Metrics(this, pluginID);
-        metrics.shutdown();
-        if (MainSpigot.jda != null && MainSpigot.jda.getStatus() == JDA.Status.CONNECTED) {
-            jda.shutdown();
+        if (metrics != null) {
+            metrics.shutdown();
         }
+        stopBot();
+
         Bukkit.getConsoleSender().sendMessage("");
         Bukkit.getConsoleSender().sendMessage("");
         Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░");
@@ -126,11 +124,11 @@ public final class MainSpigot extends JavaPlugin implements Listener {
         Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░");
         Bukkit.getConsoleSender().sendMessage("");
         Bukkit.getConsoleSender().sendMessage(ChatColor.RED + pluginOff);
-        metrics.shutdown();
     }
 
     public void runBot() {
-        if (TOKEN == null || TOKEN.isEmpty() || TOKEN.equals("TOKEN")) {
+        String token = getConfig().getString("TOKEN");
+        if (token == null || token.isBlank() || token.equals("TOKEN")) {
             Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "INVALID TOKEN FOR BOT");
             return;
         }
@@ -144,11 +142,11 @@ public final class MainSpigot extends JavaPlugin implements Listener {
                 command.add(new PlayTime(this));
                 command.add(new Link(this));
                 command.add(new PlayTimeTop(this));
-                if (setupEconomy()) {
+                if (economyEnabled) {
                     command.add(new Money());
                 }
 
-                jda = JDABuilder.createDefault(TOKEN,
+                jda = JDABuilder.createDefault(token,
                                 GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_MESSAGES,
                                 GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.GUILD_INVITES,
                                 GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.DIRECT_MESSAGE_TYPING,
@@ -164,9 +162,7 @@ public final class MainSpigot extends JavaPlugin implements Listener {
                 jda.addEventListener(new Buttons(this));
                 // TERAZ sprawdzamy, czy bot na pewno działa i pobieramy jego dane
                 if (jda != null) {
-                    Timer timer = new Timer();
-                    timer.schedule(new StatusUpdater(this), 0L, 30000L);
-                    timer.schedule(new Counter(this), 0L, 60000L);
+                    startTimers();
 
                     String logInFor = langLoader.getTranslation("Log_in_for");
                     logInFor = logInFor.replace("{botName}", jda.getSelfUser().getName());
@@ -176,7 +172,7 @@ public final class MainSpigot extends JavaPlugin implements Listener {
                 }
 
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Thread.currentThread().interrupt();
                 Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Przerwano łączenie bota Discord.");
             } catch (Exception e) {
                 // Przechwytujemy też inne błędy (np. zły token)
@@ -188,7 +184,30 @@ public final class MainSpigot extends JavaPlugin implements Listener {
     }
 
     public void stopBot() {
-        jda.shutdown();
+        cancelTimers();
+        if (jda != null && jda.getStatus() != JDA.Status.SHUTDOWN) {
+            jda.shutdown();
+        }
+        jda = null;
+    }
+
+    private void startTimers() {
+        cancelTimers();
+        statusTimer = new Timer("siwd-status-updater", true);
+        counterTimer = new Timer("siwd-counter", true);
+        statusTimer.schedule(new StatusUpdater(this), 0L, 30000L);
+        counterTimer.schedule(new Counter(this), 0L, 60000L);
+    }
+
+    private void cancelTimers() {
+        if (statusTimer != null) {
+            statusTimer.cancel();
+            statusTimer = null;
+        }
+        if (counterTimer != null) {
+            counterTimer.cancel();
+            counterTimer = null;
+        }
     }
 
     private boolean setupEconomy() {

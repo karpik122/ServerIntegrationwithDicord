@@ -5,10 +5,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import org.bukkit.BanList;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -43,9 +40,14 @@ public class ChatFlagWords extends ListenerAdapter implements Listener {
     public void onChat(AsyncPlayerChatEvent event) {
         String message = event.getMessage();
         Player playerName = event.getPlayer();
+        String normalizedMessage = message.toLowerCase();
+
+        if (flaggedWords.isEmpty()) {
+            return;
+        }
 
         for (String word : flaggedWords) {
-            if (message.toLowerCase().contains(word.toLowerCase())) {
+            if (normalizedMessage.contains(word.toLowerCase())) {
                 sendDiscordEmbed(playerName, message, word);
             }
         }
@@ -54,6 +56,10 @@ public class ChatFlagWords extends ListenerAdapter implements Listener {
     private void sendDiscordEmbed(Player player, String fullMessage, String flaggedWord) {
         String notification_from = languageLoader.getTranslation("notification_from");
         String channelId = pl.getConfig().getString("id_log_channel");
+
+        if (channelId == null || channelId.isBlank() || jda == null) {
+            return;
+        }
 
         TextChannel reportChannel = jda.getTextChannelById(channelId);
 

@@ -1,7 +1,6 @@
 package pl.karpik122.serverIntegrationwithDicord.Spigot.Discord.Event.Logi;
 
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -33,7 +32,7 @@ public class CommandLogger implements Listener {
         String commandlog_player = languageLoader.getTranslation("commandlog_player");
         String notification_from = languageLoader.getTranslation("notification_from");
 
-        if (id_log_channel == null) {
+        if (id_log_channel == null || id_log_channel.isBlank() || jda == null) {
             return;
         }
 
@@ -54,7 +53,9 @@ public class CommandLogger implements Listener {
             eb.setTimestamp(Instant.now());
 
             TextChannel tc = jda.getTextChannelById(id_log_channel);
-            tc.sendMessageEmbeds(eb.build()).queue();
+            if (tc != null) {
+                tc.sendMessageEmbeds(eb.build()).queue();
+            }
         }
     }
 }
