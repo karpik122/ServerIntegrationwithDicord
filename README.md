@@ -1,39 +1,99 @@
 # Server Integration with Dicord
-This plugin is designed to make the administration's work more pleasant and efficient by sending reports to a selected discord channel.
-- Logs of commands used by players (in addition to /login, /register, /changepassword etc.).
-It also offers a plugin to check how much time players have spent on the server
-- /link now you can link your discord account with you Minecraft account.
-- Vault integration now you can check money of you Minecraft account.
- 
 
- 
+Plugin Minecraft (Paper/Spigot 1.21), ktory laczy serwer z Discordem przez bota JDA.
 
-The plugin at this stage of development only offers 2 languages Polish and English.
+## Co robi plugin
 
-Changing the language can be done in the configuration file in the "language:" line.
-
- 
-
-In the config.yml file.
-Please enter the TKOEN of your discord bot and paste in the ID of the channel you want the logs and reports on.
+- wysyla zgloszenia graczy z komendy `/report` na wskazany kanal Discord,
+- loguje komendy graczy na Discord (z wykluczeniem komend logowania/rejestracji),
+- obsluguje komendy slash Discord do sprawdzania playtime i laczenia kont,
+- wspiera integracje z Vault (`/money` na Discord po polaczeniu kont),
+- ma tryb diagnostyczny i health-check admina.
 
 ![Discord options](https://github.com/karpik122/ServerIntegrationwithDicord/blob/master/Discord.png)
 
-Minecraft command
-/report <player> <content> - report a player that someone has broken server rules.
-
- 
-
-Discord commands
-/playtime <player_name> - sends a message to the discord chat about how much time a player has spent on the server (the "playtime" command can be edited to whatever name you want in the lang file in the line where "discord_playtime:" is).
-/alltime - sends a list of all players and their time spent on the server. This command can only be used by a person who has admin rights on a discord server.
-Discord commands
-/playtime <player_name> - sends a message to the discord chat about how much time a player has spent on the server (the "playtime" command can be edited to whatever name you want in the lang file in the line where "discord_playtime:" is).
-
 ![Serwer Integration with Discord stats](https://bstats.org/signatures/bukkit/Serwer%20Integration%20with%20Discord.svg)
 
-My discord server: [Server Discord](https://discord.gg/Rzq3fHXPAs) 
+## Wymagania
 
+- Java 21
+- Paper/Spigot API 1.21.x
+- token bota Discord
+- opcjonalnie: Vault + plugin ekonomii (dla komendy `/money`)
 
-If you have any questions or suggestions regarding this plugin, feel free to write to me on discord: karpik122
+## Szybki start
 
+1. Zbuduj plugin:
+
+```bash
+./gradlew clean build
+```
+
+2. Skopiuj wygenerowany plik JAR do folderu `plugins` na serwerze.
+3. Uruchom serwer raz, aby plugin utworzyl plik konfiguracyjny.
+4. Ustaw wartosci w `plugins/ServerIntegrationwithDicord/config.yml`:
+
+```yml
+TOKEN: "twoj_token_bota"
+report_channel: "id_kanalu_reportow"
+id_log_channel: "id_kanalu_logow"
+guildID: "id_serwera_discord"
+language: "pl-PL" # albo en-US
+debug: false
+```
+
+5. Zrestartuj serwer lub wykonaj reload komenda admina.
+
+## Komendy Minecraft
+
+- `/report <gracz> <powod>` - zgloszenie gracza na Discord.
+- `/link` - generuje kod do polaczenia konta Minecraft z Discord.
+- `/discordintegration reload` - przeladowanie pluginu i restart polaczenia bota.
+- `/discordintegration past token <token>` - zapis tokenu do configu.
+- `/discordintegration past log <channelId>` - zapis kanalu logow.
+- `/discordintegration past report <channelId>` - zapis kanalu reportow.
+- `/discordintegration health` - health-check runtime (JDA, timery, kanal logow, debug).
+
+## Komendy Discord (slash)
+
+- `/playtime <nick>` - pokazuje czas gry wskazanego gracza.
+- `/link <kod>` - laczy konto Discord z kontem Minecraft.
+- `/playtimetop` - top 5 graczy z najwiekszym playtime.
+- `/money` - stan konta gracza (wymaga Vault i polaczonego konta).
+
+Uwaga: nazwa komendy `/playtime` jest konfigurowalna przez plik jezykowy (`discord_playtime`).
+
+## Health-check i debug
+
+Nowa komenda admina:
+
+```text
+/discordintegration health
+```
+
+Pokazuje m.in.:
+
+- status JDA,
+- status timerow pluginu,
+- czy ID kanalu logow jest ustawione i osiagalne,
+- czy wlaczony jest tryb `debug`.
+
+Aby uzyskac dodatkowe logi diagnostyczne w konsoli, ustaw w `config.yml`:
+
+```yml
+debug: true
+```
+
+## Jezyki
+
+Aktualnie plugin wspiera:
+
+- `pl-PL`
+- `en-US`
+
+Zmiane jezyka wykonasz przez pole `language` w `config.yml`.
+
+## Kontakt
+
+- Discord autora: `karpik122`
+- Serwer Discord: [Server Discord](https://discord.gg/Rzq3fHXPAs)
