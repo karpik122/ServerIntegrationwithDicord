@@ -1,49 +1,26 @@
 package pl.karpik122.serverIntegrationwithDicord.Spigot.Timer;
 
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
+import pl.karpik122.serverIntegrationwithDicord.Spigot.File.PlaytimeStore;
 import pl.karpik122.serverIntegrationwithDicord.Spigot.MainSpigot;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.TimerTask;
+import java.util.List;
 
-public class Counter extends TimerTask {
+public class Counter implements Runnable {
     private final MainSpigot plugin;
+    private final PlaytimeStore playtimeStore;
 
-    public Counter(MainSpigot pl) {
+    public Counter(MainSpigot pl, PlaytimeStore playtimeStore) {
         this.plugin = pl;
+        this.playtimeStore = playtimeStore;
     }
 
+    @Override
     public void run() {
-        File f = new File(plugin.getDataFolder(), "playtime.yml");
-
-        if (!f.exists()) {
-            try {
-                f.createNewFile();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        YamlConfiguration file = YamlConfiguration.loadConfiguration(f);
-
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            String name = player.getName();
-
-            // Pobiera obecny czas lub 0, jeśli gracza jeszcze nie ma w pliku
-            int currentTime = file.getInt(name, 0);
-
-            // Zapisuje samą liczbę (bez Optional)
-            file.set(name, currentTime + 1);
-        }
-
-        // Zapisuje plik tylko raz na koniec pętli
-        try {
-            file.save(f);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        List<String> onlinePlayerNames = Bukkit.getOnlinePlayers().stream()
+                .map(player -> player.getName())
+                .toList();
+        playtimeStore.incrementPlayers(onlinePlayerNames);
+        plugin.debugLog("Updated playtime for " + onlinePlayerNames.size() + " online players");
     }
 }

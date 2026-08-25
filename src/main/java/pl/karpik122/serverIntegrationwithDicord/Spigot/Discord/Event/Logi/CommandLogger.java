@@ -1,6 +1,7 @@
 package pl.karpik122.serverIntegrationwithDicord.Spigot.Discord.Event.Logi;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -9,59 +10,82 @@ import pl.karpik122.serverIntegrationwithDicord.Spigot.File.LanguageLoader;
 import pl.karpik122.serverIntegrationwithDicord.Spigot.File.LanguageManager;
 import pl.karpik122.serverIntegrationwithDicord.Spigot.MainSpigot;
 
-import java.awt.*;
+import java.awt.Color;
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
-import static pl.karpik122.serverIntegrationwithDicord.Spigot.MainSpigot.jda;
-
 public class CommandLogger implements Listener {
-    private static final Set<String> EXCLUDED_COMMANDS = Set.of(
-            "/login", "/l", "/register", "/r", "/changepassword",
-            "/changepass", "/help", "/discordintegration", "/report"
+    private static final Set<String> SAFE_DEFAULT_EXCLUSIONS = Set.of(
+            "login", "l", "log", "register", "reg", "changepassword",
+            "changepass", "cp", "discordintegration", "di", "report"
     );
 
     private final MainSpigot plugin;
     private final LanguageLoader languageLoader;
-    public CommandLogger(MainSpigot pl) {
-        this.plugin = pl;
-        languageLoader = LanguageManager.getInstance();
-    }
 
+    public CommandLogger(MainSpigot plugin) {
+        this.plugin = plugin;
+        this.languageLoader = LanguageManager.getInstance();
+    }
 
     @EventHandler
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-        String id_log_channel = plugin.getConfig().getString("id_log_channel");
-
-        String commandlog_use_log = languageLoader.getTranslation("commandlog_use_log");
-        String commandlog_command = languageLoader.getTranslation("commandlog_command");
-        String commandlog_player = languageLoader.getTranslation("commandlog_player");
-        String notification_from = languageLoader.getTranslation("notification_from");
-
-        if (id_log_channel == null || id_log_channel.isBlank() || jda == null) {
+        if (!plugin.getConfig().getBoolean("command_log.enabled", true)) {
             return;
         }
 
-        String message = event.getMessage().toLowerCase(Locale.ROOT);
-        String commandName = message.split("\\s+", 2)[0];
-        if (EXCLUDED_COMMANDS.contains(commandName)) {
+        String commandName = extractCommandName(event.getMessage());
+        if (getExcludedCommands().contains(commandName)) {
             return;
         }
 
-        EmbedBuilder eb = new EmbedBuilder();
-
-        eb.setAuthor(event.getPlayer().getName());
-        eb.setColor(Color.RED);
-        eb.setTitle(commandlog_use_log);
-        eb.addField(commandlog_command, event.getMessage(), true);
-        eb.addField(commandlog_player, event.getPlayer().getName(), true);
-        eb.setFooter(notification_from);
-        eb.setTimestamp(Instant.now());
-
-        TextChannel tc = jda.getTextChannelById(id_log_channel);
-        if (tc != null) {
-            tc.sendMessageEmbeds(eb.build()).queue();
+        JDA currentJda = MainSpigot.jda;
+        if (currentJda == null || currentJda.getStatus() != JDA.Status.CONNECTED) {
+            return;
         }
+
+        String logChannelId = plugin.normalizedConfigValue("id_log_channel");
+        String guildId = plugin.normalizedConfigValue("guildID");
+        TextChannel channel = logChannelId.isBlank() ? null : currentJda.getTextChannelById(logChannelId);
+        if (channel == null || !channel.canTalk() || !channel.getGuild().getId().equals(guildId)) {
+            return;
+        }
+
+        EmbedBuilder embed = new EmbedBuilder()
+                .setAuthor(event.getPlayer().getName())
+                .setColor(Color.RED)
+                .setTitle(languageLoader.getTranslation("commandlog_use_log"))
+                .addField(languageLoader.getTranslation("commandlog_command"), event.getMessage(), false)
+                .addField(languageLoader.getTranslation("commandlog_player"), event.getPlayer().getName(), true)
+                .setFooter(languageLoader.getTranslation("notification_from"))
+                .setTimestamp(Instant.now());
+
+        channel.sendMessageEmbeds(embed.build()).queue(
+                ignored -> {
+                },
+                error -> plugin.debugLog("Could not send command log: " + error.getMessage())
+        );
+    }
+
+    private Set<String> getExcludedCommands() {
+        Set<String> exclusions = new HashSet<>(SAFE_DEFAULT_EXCLUSIONS);
+        for (String configured : plugin.getConfig().getStringList("command_log.excluded_commands")) {
+            String normalized = configured.toLowerCase(Locale.ROOT).trim();
+            if (normalized.startsWith("/")) {
+                normalized = normalized.substring(1);
+            }
+            if (!normalized.isBlank()) {
+                exclusions.add(normalized);
+            }
+        }
+        return exclusions;
+    }
+
+    private String extractCommandName(String rawMessage) {
+        String root = rawMessage.substring(1).split("\\s+", 2)[0].toLowerCase(Locale.ROOT);
+        int namespaceSeparator = root.indexOf(':');
+        return namespaceSeparator >= 0 ? root.substring(namespaceSeparator + 1) : root;
     }
 }

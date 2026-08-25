@@ -8,49 +8,76 @@ import java.io.IOException;
 import java.util.UUID;
 
 public class Economy {
-    public final MainSpigot plugin;
+    private static final Object LOCK = new Object();
+    private static MainSpigot plugin;
     private static File file;
 
     public Economy(MainSpigot plugin) {
-        this.plugin = plugin;
+        Economy.plugin = plugin;
 
         File folder = new File(plugin.getDataFolder(), "link");
-        if(!folder.exists()) {
-            folder.mkdirs();
+        if (!folder.exists() && !folder.mkdirs()) {
+            plugin.getLogger().warning("Could not create linked-account directory: " + folder);
         }
 
         file = new File(folder, "players.yml");
         if (!file.exists()) {
             try {
-                file.createNewFile();
+                if (!file.createNewFile()) {
+                    plugin.getLogger().warning("Could not create linked-account file: " + file);
+                }
             } catch (IOException e) {
-                e.printStackTrace();
+                plugin.getLogger().severe("Could not create linked-account file: " + e.getMessage());
             }
         }
     }
 
-    public static void setPlayersLink(UUID uuid, String discordID) {
-        // Zapisuje do pliku gracze.yml
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-        config.set(uuid.toString(), discordID);
-        try {
-            config.save(file);
-        } catch (IOException e) {
-            return;
+    public static boolean setPlayersLink(UUID uuid, String discordID) {
+        if (!isInitialized() || uuid == null || discordID == null || discordID.isBlank()) {
+            return false;
+        }
+
+        synchronized (LOCK) {
+            YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+
+            for (String key : config.getKeys(false)) {
+                if (discordID.equals(config.getString(key)) && !uuid.toString().equals(key)) {
+                    config.set(key, null);
+                }
+            }
+
+            config.set(uuid.toString(), discordID);
+            try {
+                config.save(file);
+                return true;
+            } catch (IOException e) {
+                plugin.getLogger().severe("Could not save linked accounts: " + e.getMessage());
+                return false;
+            }
         }
     }
 
     public static UUID getUid(String discordID) {
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+        if (!isInitialized() || discordID == null) {
+            return null;
+        }
 
-        // Przeszukuje wszystkie zapisane klucze (czyli UUID) w pliku
-        for (String key : config.getKeys(false)) {
-            // Jeśli ID z Discorda się zgadza, zwraca UUID jako wynik
-            if (discordID.equals(config.getString(key))) {
-                return UUID.fromString(key);
+        synchronized (LOCK) {
+            YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+            for (String key : config.getKeys(false)) {
+                if (discordID.equals(config.getString(key))) {
+                    try {
+                        return UUID.fromString(key);
+                    } catch (IllegalArgumentException exception) {
+                        plugin.getLogger().warning("Invalid UUID in linked-account file: " + key);
+                    }
+                }
             }
         }
-        // Jeśli nie znajdzie konta, nie zwraca niczego
         return null;
+    }
+
+    private static boolean isInitialized() {
+        return plugin != null && file != null;
     }
 }

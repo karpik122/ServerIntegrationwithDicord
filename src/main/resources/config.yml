@@ -1,30 +1,47 @@
-# Token of your discord bot
-TOKEN: "TOKEN"
+# Token bota Discord. Nigdy nie publikuj pliku z prawdziwym tokenem.
+TOKEN: ""
 
-# id of text channel in your server Discord
-# Channel for report and other
-report_channel: 'id'
-# Log channel id (command log)
-id_log_channel: 'id'
-# Guild id
-guildID: 'id'
+# Identyfikatory Discord (włącz tryb deweloperski w kliencie Discord, aby je skopiować).
+report_channel: ""
+id_log_channel: ""
+guildID: ""
 
 # pl-PL, en-US
-language: "en-US"
+language: "pl-PL"
 
-# Enable additional diagnostic logs in console
+# Dodatkowe logi diagnostyczne w konsoli.
 debug: false
 
-# Admin section
-# Buttons for kick and Ban
+# Sprawdzanie nowej wersji przez zewnętrzne API CurseForge.
+check_for_updates: false
+
+# Ważność kodu z /link oraz ograniczenie spamu /report.
+link_code_ttl_minutes: 10
+report_cooldown_seconds: 30
+
+# Logowanie komend. Nazwy podawaj bez ukośnika.
+command_log:
+  enabled: true
+  excluded_commands:
+    - login
+    - l
+    - log
+    - register
+    - reg
+    - changepassword
+    - changepass
+    - cp
+    - discordintegration
+    - di
+    - report
+
+# Przyciski ban/kick pod zgłoszeniami i alertami.
 discordadmininteraction: false
 
-# ID of admin rang
-admindiscordid:
-  -
+# ID ról Discord uprawnionych do przycisków administracyjnych.
+admindiscordid: []
 
-# List of words that it will be non-friendly
+# Alertowanie o wskazanych słowach na kanale logów.
 flag: false
 flagwords:
-  - wrong sentence
-  - wrong sentence2
+  - "przykładowe niedozwolone słowo"

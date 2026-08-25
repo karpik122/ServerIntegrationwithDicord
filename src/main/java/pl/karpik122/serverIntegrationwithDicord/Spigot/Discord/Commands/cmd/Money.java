@@ -8,6 +8,7 @@ import pl.karpik122.serverIntegrationwithDicord.Spigot.Discord.Commands.ICommand
 import pl.karpik122.serverIntegrationwithDicord.Spigot.File.Economy;
 import pl.karpik122.serverIntegrationwithDicord.Spigot.File.LanguageLoader;
 import pl.karpik122.serverIntegrationwithDicord.Spigot.File.LanguageManager;
+import pl.karpik122.serverIntegrationwithDicord.Spigot.MainSpigot;
 
 import java.util.List;
 import java.util.UUID;
@@ -15,9 +16,11 @@ import java.util.UUID;
 import static pl.karpik122.serverIntegrationwithDicord.Spigot.MainSpigot.econ;
 
 public class Money implements ICommand {
+    private final MainSpigot plugin;
     private final LanguageLoader languageLoader;
 
-    public Money() {
+    public Money(MainSpigot plugin) {
+        this.plugin = plugin;
         languageLoader = LanguageManager.getInstance();
     }
 
@@ -27,7 +30,7 @@ public class Money implements ICommand {
     }
 
     @Override
-    public String getDiscretion() {
+    public String getDescription() {
         return languageLoader.getTranslation("description_money");
     }
 
@@ -38,22 +41,27 @@ public class Money implements ICommand {
 
     @Override
     public void execute(SlashCommandInteractionEvent event) {
-        // 1. Pobiera identyfikator z pliku
         UUID uid = Economy.getUid(event.getUser().getId());
 
-        // 2. NAJPIERW sprawdza, czy gracz jest połączony
         if (uid == null) {
             event.reply(languageLoader.getTranslation("isnt_connectet_discord")).setEphemeral(true).queue();
             return;
         }
 
-        // 3. Zamienia UUID na obiekt gracza z Minecrafta (Bukkit)
-        OfflinePlayer player = Bukkit.getOfflinePlayer(uid);
+        event.deferReply(true).queue(hook -> Bukkit.getScheduler().runTask(plugin, () -> {
+            if (econ == null) {
+                hook.editOriginal(languageLoader.getTranslation("economy_unavailable")).queue();
+                return;
+            }
 
-        // 4. Pobiera stan konta
-        double balance = econ.getBalance(player);
-
-        // 5. Wysyła wiadomość na Discordzie
-        event.reply(languageLoader.getTranslation("have_in_account") + balance).queue();
+            try {
+                OfflinePlayer player = Bukkit.getOfflinePlayer(uid);
+                double balance = econ.getBalance(player);
+                hook.editOriginal(languageLoader.getTranslation("have_in_account") + econ.format(balance)).queue();
+            } catch (Exception exception) {
+                plugin.getLogger().severe("Vault balance lookup failed: " + exception.getMessage());
+                hook.editOriginal(languageLoader.getTranslation("economy_unavailable")).queue();
+            }
+        }));
     }
 }

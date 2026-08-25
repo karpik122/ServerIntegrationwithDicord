@@ -1,192 +1,154 @@
 package pl.karpik122.serverIntegrationwithDicord.Spigot.Commands;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.jetbrains.annotations.NotNull;
-import pl.karpik122.serverIntegrationwithDicord.Spigot.Discord.Event.ChatFlagWords;
 import pl.karpik122.serverIntegrationwithDicord.Spigot.File.LanguageLoader;
 import pl.karpik122.serverIntegrationwithDicord.Spigot.File.LanguageManager;
 import pl.karpik122.serverIntegrationwithDicord.Spigot.MainSpigot;
 
-import static pl.karpik122.serverIntegrationwithDicord.Spigot.MainSpigot.jda;
-
+import java.util.Locale;
 
 public class DiscordIntegrationAdminCommand implements CommandExecutor {
-
-    private final MainSpigot pl;
+    private final MainSpigot plugin;
     private final LanguageLoader languageLoader;
 
-    public DiscordIntegrationAdminCommand(MainSpigot pl) {
-        this.pl = pl;
-        languageLoader = LanguageManager.getInstance();
+    public DiscordIntegrationAdminCommand(MainSpigot plugin) {
+        this.plugin = plugin;
+        this.languageLoader = LanguageManager.getInstance();
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
-        String remember_to_restart = languageLoader.getTranslation("remember_to_restart");
-
-        String admin_command_help = languageLoader.getTranslation("admin_command_help");
-        String admin_command_reload = languageLoader.getTranslation("admin_command_reload");
-        String admin_command_past_token = languageLoader.getTranslation("admin_command_past_token");
-        String admin_command_past_log = languageLoader.getTranslation("admin_command_past_log");
-        String admin_command_past_report = languageLoader.getTranslation("admin_command_past_report");
-        String admin_command_health = languageLoader.getTranslation("admin_command_health");
-        String admin_command_accept = languageLoader.getTranslation("admin_command_accept");
-
-        if (sender.hasPermission("serverintegrationwithdicord.admin")) {
-
-            if (command.getName().equalsIgnoreCase("discordintegration")) {
-                if (args.length < 1) {
-                    sender.sendMessage(ChatColor.RED + "Usage: /discordintegration <reload | health | past> [token | log | report] <value>");
-                    return true;
-                }
-
-                if (args[0].equalsIgnoreCase("reload")) {
-                    sender.sendMessage(ChatColor.GREEN + "Reload...");
-                    sender.sendMessage("");
-                    sender.sendMessage("");
-                    sender.sendMessage(ChatColor.AQUA + "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░");
-                    sender.sendMessage(ChatColor.AQUA + "░░██████╗░██╗░░██╗░░░░░░░██╗░██████╗░░");
-                    sender.sendMessage(ChatColor.AQUA + "░██╔════╝░██║░░██║░░██╗░░██║░██╔══██╗░");
-                    sender.sendMessage(ChatColor.AQUA + "░╚█████╗░░██║░░╚██╗████╗██╔╝░██║░░██║░");
-                    sender.sendMessage(ChatColor.AQUA + "░░╚═══██╗░██║░░░████╔═████║░░██║░░██║░");
-                    sender.sendMessage(ChatColor.AQUA + "░██████╔╝░██║░░░╚██╔╝░╚██╔╝░░██████╔╝░");
-                    sender.sendMessage(ChatColor.AQUA + "░╚═════╝░░╚═╝░░░░╚═╝░░░╚═╝░░░╚═════╝░░");
-                    sender.sendMessage(ChatColor.AQUA + "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░");
-                    sender.sendMessage("");
-                    pl.saveConfig();
-                    pl.reloadConfig();
-                    reload();
-                    sender.sendMessage(ChatColor.GREEN + "Success");
-                    return true;
-                }
-
-                if (args[0].equalsIgnoreCase("health")) {
-                    sendHealthCheck(sender);
-                    return true;
-                }
-
-                if (args[0].equalsIgnoreCase("past") && args.length > 1) {
-                    if (args[1].equalsIgnoreCase("token") && args.length == 3) {
-                        String discordToken = args[2];
-                        saveTokenToConfig(discordToken);
-                        sender.sendMessage(ChatColor.GREEN + admin_command_accept);
-                        sender.sendMessage(ChatColor.RED + remember_to_restart);
-                        return true;
-                    } else if (args[1].equalsIgnoreCase("log") && args.length == 3) {
-                        String logid = args[2];
-                        saveLogIdToConfig(logid);
-                        sender.sendMessage(ChatColor.GREEN + admin_command_accept);
-                        sender.sendMessage(ChatColor.RED + remember_to_restart);
-                        return true;
-                    } else if (args[1].equalsIgnoreCase("report") && args.length == 3) {
-                        String reportid = args[2];
-                        saveReportIdConfig(reportid);
-                        sender.sendMessage(ChatColor.GREEN + admin_command_accept);
-                        sender.sendMessage(ChatColor.RED + remember_to_restart);
-                        return true;
-                    } else {
-                        sender.sendMessage(ChatColor.YELLOW + admin_command_help);
-                        sender.sendMessage(ChatColor.GREEN + admin_command_reload);
-                        sender.sendMessage(ChatColor.GREEN + admin_command_past_token);
-                        sender.sendMessage(ChatColor.GREEN + admin_command_past_log);
-                        sender.sendMessage(ChatColor.GREEN + admin_command_past_report);
-                        sender.sendMessage(ChatColor.GREEN + admin_command_health);
-                        return true;
-                    }
-                }
-
-                sender.sendMessage(ChatColor.YELLOW + admin_command_help);
-                sender.sendMessage(ChatColor.GREEN + admin_command_reload);
-                sender.sendMessage(ChatColor.GREEN + admin_command_past_token);
-                sender.sendMessage(ChatColor.GREEN + admin_command_past_log);
-                sender.sendMessage(ChatColor.GREEN + admin_command_past_report);
-                sender.sendMessage(ChatColor.GREEN + admin_command_health);
-                return true;
-            }
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command,
+                             @NotNull String label, @NotNull String[] args) {
+        if (!sender.hasPermission("serverintegrationwithdicord.admin")) {
+            sender.sendMessage(ChatColor.RED + languageLoader.getTranslation("no_permission"));
+            return true;
         }
-        return false;
+
+        if (args.length == 0) {
+            sendHelp(sender);
+            return true;
+        }
+
+        if (args[0].equalsIgnoreCase("reload")) {
+            sender.sendMessage(ChatColor.YELLOW + "Reloading Discord integration...");
+            plugin.reloadIntegration();
+            sender.sendMessage(ChatColor.GREEN + languageLoader.getTranslation("admin_command_accept"));
+            return true;
+        }
+
+        if (args[0].equalsIgnoreCase("health")) {
+            sendHealthCheck(sender);
+            return true;
+        }
+
+        if (args[0].equalsIgnoreCase("set") || args[0].equalsIgnoreCase("past")) {
+            handleSet(sender, args);
+            return true;
+        }
+
+        sendHelp(sender);
+        return true;
     }
 
-    public void reload() {
-        pl.stopBot();
+    private void handleSet(CommandSender sender, String[] args) {
+        if (args.length != 3) {
+            sender.sendMessage(ChatColor.RED + languageLoader.getTranslation("admin_command_missing_value"));
+            sendHelp(sender);
+            return;
+        }
 
-        pl.reloadConfig();
+        String target = args[1].toLowerCase(Locale.ROOT);
+        String value = args[2].trim();
+        String configPath;
 
-        Bukkit.getConsoleSender().sendMessage("");
-        Bukkit.getConsoleSender().sendMessage("");
-        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░");
-        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░░██████╗░██╗░░██╗░░░░░░░██╗░██████╗░░");
-        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░██╔════╝░██║░░██║░░██╗░░██║░██╔══██╗░");
-        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░╚█████╗░░██║░░╚██╗████╗██╔╝░██║░░██║░");
-        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░░╚═══██╗░██║░░░████╔═████║░░██║░░██║░");
-        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░██████╔╝░██║░░░╚██╔╝░╚██╔╝░░██████╔╝░");
-        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░╚═════╝░░╚═╝░░░░╚═╝░░░╚═╝░░░╚═════╝░░");
-        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░");
-        Bukkit.getConsoleSender().sendMessage("");
+        switch (target) {
+            case "token" -> configPath = "TOKEN";
+            case "log" -> configPath = "id_log_channel";
+            case "report" -> configPath = "report_channel";
+            case "guild" -> configPath = "guildID";
+            default -> {
+                sendHelp(sender);
+                return;
+            }
+        }
 
-        Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "Restart");
+        if (!target.equals("token") && !isDiscordId(value)) {
+            sender.sendMessage(ChatColor.RED + languageLoader.getTranslation("admin_command_invalid_id"));
+            return;
+        }
+        if (target.equals("token") && value.isBlank()) {
+            sender.sendMessage(ChatColor.RED + languageLoader.getTranslation("admin_command_missing_value"));
+            return;
+        }
 
-        languageLoader.reload();
-        pl.runBot();
+        FileConfiguration config = plugin.getConfig();
+        config.set(configPath, value);
+        plugin.saveConfig();
+        plugin.reloadIntegration();
+        sender.sendMessage(ChatColor.GREEN + languageLoader.getTranslation("admin_command_accept"));
     }
 
     private void sendHealthCheck(CommandSender sender) {
-        String logChannelId = pl.getConfig().getString("id_log_channel", "");
-        boolean logIdConfigured = !logChannelId.isBlank() && !"id".equalsIgnoreCase(logChannelId);
+        JDA currentJda = MainSpigot.jda;
+        boolean jdaOnline = currentJda != null && currentJda.getStatus() == JDA.Status.CONNECTED;
+        String guildId = plugin.normalizedConfigValue("guildID");
+        String logChannelId = plugin.normalizedConfigValue("id_log_channel");
+        String reportChannelId = plugin.normalizedConfigValue("report_channel");
 
-        String jdaStatusName = pl.getJdaStatusName();
-        boolean jdaOnline = jda != null && jda.getStatus() == JDA.Status.CONNECTED;
-
-        boolean logChannelReachable = false;
-        if (jda != null && logIdConfigured) {
-            TextChannel channel = jda.getTextChannelById(logChannelId);
-            logChannelReachable = channel != null;
-        }
+        Guild guild = currentJda == null || guildId.isBlank() ? null : currentJda.getGuildById(guildId);
+        TextChannel logChannel = guild == null || logChannelId.isBlank()
+                ? null : guild.getTextChannelById(logChannelId);
+        TextChannel reportChannel = guild == null || reportChannelId.isBlank()
+                ? null : guild.getTextChannelById(reportChannelId);
 
         sender.sendMessage(ChatColor.GOLD + "==== Discord Integration Health Check ====");
-        sender.sendMessage(ChatColor.YELLOW + "JDA status: " + statusColor(jdaOnline) + jdaStatusName);
-        sender.sendMessage(ChatColor.YELLOW + "Status timer: " + statusColor(pl.isStatusTimerActive()) + boolText(pl.isStatusTimerActive()));
-        sender.sendMessage(ChatColor.YELLOW + "Counter timer: " + statusColor(pl.isCounterTimerActive()) + boolText(pl.isCounterTimerActive()));
-        sender.sendMessage(ChatColor.YELLOW + "Log channel ID set: " + statusColor(logIdConfigured) + boolText(logIdConfigured));
-        sender.sendMessage(ChatColor.YELLOW + "Log channel reachable: " + statusColor(logChannelReachable) + boolText(logChannelReachable));
-        sender.sendMessage(ChatColor.YELLOW + "Debug mode: " + statusColor(pl.isDebugEnabled()) + boolText(pl.isDebugEnabled()));
-        sender.sendMessage(ChatColor.GRAY + "Configured log channel: " + (logChannelId.isBlank() ? "<empty>" : logChannelId));
+        sendStatus(sender, "JDA", jdaOnline, plugin.getJdaStatusName());
+        sendStatus(sender, "Guild configured", !guildId.isBlank(), displayId(guildId));
+        sendStatus(sender, "Guild reachable", guild != null, guild == null ? "NO" : guild.getName());
+        sendStatus(sender, "Log channel", logChannel != null && logChannel.canTalk(), displayId(logChannelId));
+        sendStatus(sender, "Report channel", reportChannel != null && reportChannel.canTalk(), displayId(reportChannelId));
+        sendStatus(sender, "Discord status task", plugin.isStatusTimerActive(), boolText(plugin.isStatusTimerActive()));
+        sendStatus(sender, "Playtime task", plugin.isCounterTimerActive(), boolText(plugin.isCounterTimerActive()));
+        sendStatus(sender, "Vault economy", plugin.isEconomyEnabled(), boolText(plugin.isEconomyEnabled()));
+        sender.sendMessage(ChatColor.YELLOW + "Pending link codes: " + ChatColor.WHITE
+                + AccountLink.getPendingCodeCount());
+        sender.sendMessage(ChatColor.YELLOW + "Debug mode: " + ChatColor.WHITE
+                + boolText(plugin.isDebugEnabled()));
     }
 
-    private ChatColor statusColor(boolean ok) {
-        return ok ? ChatColor.GREEN : ChatColor.RED;
+    private void sendStatus(CommandSender sender, String name, boolean ok, String value) {
+        sender.sendMessage(ChatColor.YELLOW + name + ": "
+                + (ok ? ChatColor.GREEN : ChatColor.RED) + value);
+    }
+
+    private void sendHelp(CommandSender sender) {
+        sender.sendMessage(ChatColor.YELLOW + languageLoader.getTranslation("admin_command_help"));
+        sender.sendMessage(ChatColor.GREEN + "/discordintegration reload");
+        sender.sendMessage(ChatColor.GREEN + "/discordintegration health");
+        sender.sendMessage(ChatColor.GREEN + "/discordintegration set token <token>");
+        sender.sendMessage(ChatColor.GREEN + "/discordintegration set guild <guildId>");
+        sender.sendMessage(ChatColor.GREEN + "/discordintegration set log <channelId>");
+        sender.sendMessage(ChatColor.GREEN + "/discordintegration set report <channelId>");
+        sender.sendMessage(ChatColor.GRAY + "Legacy alias: 'past' works in place of 'set'.");
+    }
+
+    private boolean isDiscordId(String value) {
+        return value.matches("\\d{15,22}");
+    }
+
+    private String displayId(String value) {
+        return value.isBlank() ? "<not configured>" : value;
     }
 
     private String boolText(boolean value) {
         return value ? "YES" : "NO";
-    }
-
-    private void saveTokenToConfig(String token) {
-        FileConfiguration config = pl.getConfig();
-        config.set("TOKEN", token);
-        pl.saveConfig();
-        reload();
-    }
-
-    private void saveLogIdToConfig(String logid) {
-        FileConfiguration config = pl.getConfig();
-        config.set("id_log_channel", logid);
-        pl.saveConfig();
-        reload();
-    }
-
-
-    private void saveReportIdConfig(String reportid) {
-        FileConfiguration config = pl.getConfig();
-        config.set("report_channel", reportid);
-        pl.saveConfig();
-        reload();
     }
 }

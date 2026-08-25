@@ -3,8 +3,8 @@ package pl.karpik122.serverIntegrationwithDicord.Spigot.Discord.Commands.cmd;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import org.bukkit.configuration.file.YamlConfiguration;
 import pl.karpik122.serverIntegrationwithDicord.Spigot.Discord.Commands.ICommand;
 import pl.karpik122.serverIntegrationwithDicord.Spigot.File.LanguageLoader;
 import pl.karpik122.serverIntegrationwithDicord.Spigot.File.LanguageManager;
@@ -12,11 +12,10 @@ import pl.karpik122.serverIntegrationwithDicord.Spigot.MainSpigot;
 
 
 import java.awt.*;
-import java.io.File;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.Locale;
+import java.util.OptionalInt;
 
 public class PlayTime implements ICommand {
     private final LanguageLoader languageLoader = LanguageManager.getInstance();
@@ -28,11 +27,12 @@ public class PlayTime implements ICommand {
 
     @Override
     public String getName() {
-        return languageLoader.getTranslation("discord_playtime");
+        String configuredName = languageLoader.getTranslation("discord_playtime").toLowerCase(Locale.ROOT);
+        return configuredName.matches("[a-z0-9_-]{1,32}") ? configuredName : "playtime";
     }
 
     @Override
-    public String getDiscretion() {
+    public String getDescription() {
         return languageLoader.getTranslation("discord_playtime_description");
     }
 
@@ -41,10 +41,10 @@ public class PlayTime implements ICommand {
         String nick = languageLoader.getTranslation("discord_playtime_nick");
         String enter_nick = languageLoader.getTranslation("discord_playtime_enter_player_name");
 
-        List<OptionData> option = new ArrayList<>();
-        option.add(new OptionData(OptionType.STRING, nick, enter_nick, true));
-
-        return option;
+        String normalizedOptionName = nick.toLowerCase(Locale.ROOT);
+        String safeOptionName = normalizedOptionName.matches("[a-z0-9_-]{1,32}")
+                ? normalizedOptionName : "nick";
+        return List.of(new OptionData(OptionType.STRING, safeOptionName, enter_nick, true));
     }
 
     @Override
@@ -55,16 +55,22 @@ public class PlayTime implements ICommand {
         String hours_in_server = languageLoader.getTranslation("playtime_hours_on_server");
         String notification_from = languageLoader.getTranslation("notification_from");
 
-        String player = Objects.requireNonNull(event.getOption(nick)).getAsString();
+        String normalizedOptionName = nick.toLowerCase(Locale.ROOT);
+        String safeOptionName = normalizedOptionName.matches("[a-z0-9_-]{1,32}")
+                ? normalizedOptionName : "nick";
+        OptionMapping playerOption = event.getOption(safeOptionName);
+        if (playerOption == null) {
+            event.reply(languageLoader.getTranslation("discord_command_error")).setEphemeral(true).queue();
+            return;
+        }
+        String player = playerOption.getAsString();
+        OptionalInt storedMinutes = plugin.getPlaytimeStore().getMinutes(player);
 
-        File f = new File(plugin.getDataFolder(), "playtime.yml");
-        YamlConfiguration file = YamlConfiguration.loadConfiguration(f);
-
-        if (file.get(player) == null) {
+        if (storedMinutes.isEmpty()) {
             event.reply(no_such_player).setEphemeral(true).queue();
             return;
         }
-        int minutes = file.getInt(player);
+        int minutes = storedMinutes.getAsInt();
         int h = minutes / 60;
 
         min_in_server = min_in_server.replace("{minutes}", String.valueOf(minutes));

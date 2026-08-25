@@ -1,23 +1,19 @@
 package pl.karpik122.serverIntegrationwithDicord.Spigot.Discord.Commands;
 
-import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
-import java.util.Collections;
 import java.util.List;
 
 public interface ICommand {
 
     String getName();
 
-    String getDiscretion();
+    String getDescription();
 
-    default List<Role> getRoles() {
-        return Collections.emptyList();
+    default List<OptionData> getOptions() {
+        return List.of();
     }
-
-    List<OptionData> getOptions();
 
     void execute(SlashCommandInteractionEvent event);
 

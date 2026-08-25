@@ -1,99 +1,172 @@
 # Server Integration with Dicord
 
-Plugin Minecraft (Paper/Spigot 1.21), ktory laczy serwer z Discordem przez bota JDA.
+Plugin dla Paper/Spigot 1.21.x, który łączy serwer Minecraft z Discordem przez bota JDA.
 
-## Co robi plugin
+> Nazwa projektu i głównego folderu pluginu zachowuje oryginalną pisownię `Dicord`, aby aktualizacja nie utworzyła drugiego katalogu konfiguracyjnego.
 
-- wysyla zgloszenia graczy z komendy `/report` na wskazany kanal Discord,
-- loguje komendy graczy na Discord (z wykluczeniem komend logowania/rejestracji),
-- obsluguje komendy slash Discord do sprawdzania playtime i laczenia kont,
-- wspiera integracje z Vault (`/money` na Discord po polaczeniu kont),
-- ma tryb diagnostyczny i health-check admina.
+## Funkcje
 
-![Discord options](https://github.com/karpik122/ServerIntegrationwithDicord/blob/master/Discord.png)
-
-![Serwer Integration with Discord stats](https://bstats.org/signatures/bukkit/Serwer%20Integration%20with%20Discord.svg)
+- `/report <gracz> <powód>` wysyła zgłoszenie na wybrany kanał Discord;
+- logowanie komend graczy z bezpiecznym pomijaniem komend logowania, rejestracji i konfiguracji tokenu;
+- slash-commandy Discord: `/playtime`, `/playtimetop`, `/link` i opcjonalne `/money`;
+- jednorazowe kody łączenia kont z czasem ważności;
+- trwałe powiązania Minecraft UUID ↔ Discord ID;
+- niezależne naliczanie playtime — działa także wtedy, gdy bot Discord jest wyłączony;
+- integracja z Vault i pluginem ekonomii;
+- opcjonalne alerty o wskazanych słowach na czacie;
+- opcjonalne przyciski ban/kick dla określonych ról Discord;
+- przeładowanie połączenia bez restartu serwera i rozbudowany health-check.
 
 ## Wymagania
 
-- Java 21
-- Paper/Spigot API 1.21.x
-- token bota Discord
-- opcjonalnie: Vault + plugin ekonomii (dla komendy `/money`)
+- Java 21;
+- Paper lub Spigot 1.21.x;
+- bot Discord i jego token;
+- opcjonalnie Vault oraz plugin ekonomii obsługiwany przez Vault.
 
-## Szybki start
+JAR nie zawiera JDA, dzięki czemu pozostaje bardzo mały. Przy pierwszym
+uruchomieniu Paper/Spigot odczyta sekcję `libraries` z `plugin.yml` i pobierze
+JDA 6.4.1 z Maven Central. Serwer musi wtedy mieć dostęp do internetu.
 
-1. Zbuduj plugin:
+## Budowanie
+
+Projekt zawiera kompletny Gradle Wrapper dla Windows, Linux i macOS.
+
+Linux/macOS:
 
 ```bash
 ./gradlew clean build
 ```
 
-2. Skopiuj wygenerowany plik JAR do folderu `plugins` na serwerze.
-3. Uruchom serwer raz, aby plugin utworzyl plik konfiguracyjny.
-4. Ustaw wartosci w `plugins/ServerIntegrationwithDicord/config.yml`:
+Windows PowerShell:
+
+```powershell
+.\gradlew.bat clean build
+```
+
+Gotowy plik powstaje tutaj:
+
+```text
+build/libs/sdj-1.9.jar
+```
+
+Skopiuj wygenerowany plik JAR do katalogu `plugins` serwera. Nie dodawaj osobnego
+pliku JDA do katalogu `plugins`.
+
+## Konfiguracja bota Discord
+
+1. Utwórz aplikację i bota w Discord Developer Portal.
+2. Zaproś bota na serwer z zakresami `bot` oraz `applications.commands`.
+3. Nadaj mu na kanałach logów i zgłoszeń uprawnienia:
+   - View Channel,
+   - Send Messages,
+   - Embed Links.
+4. Skopiuj token bota oraz ID serwera i kanałów.
+
+Plugin korzysta z domyślnych intentów JDA. Nie wymaga włączania `Message Content`, `Server Members` ani `Presence Intent`.
+
+## Instalacja
+
+1. Skopiuj JAR do katalogu `plugins` serwera.
+2. Uruchom serwer raz, aby utworzyć pliki konfiguracyjne.
+3. Zatrzymaj serwer i uzupełnij `plugins/ServerIntegrationwithDicord/config.yml`:
 
 ```yml
-TOKEN: "twoj_token_bota"
-report_channel: "id_kanalu_reportow"
-id_log_channel: "id_kanalu_logow"
-guildID: "id_serwera_discord"
-language: "pl-PL" # albo en-US
+TOKEN: "token_bota"
+report_channel: "123456789012345678"
+id_log_channel: "123456789012345678"
+guildID: "123456789012345678"
+language: "pl-PL"
 debug: false
 ```
 
-5. Zrestartuj serwer lub wykonaj reload komenda admina.
+4. Ponownie uruchom serwer.
+5. Wykonaj `/discordintegration health` i sprawdź kanały Discord.
+
+Nie publikuj `config.yml` zawierającego prawdziwy token. Jeżeli token trafił do repozytorium lub wiadomości publicznej, wygeneruj nowy w Discord Developer Portal.
 
 ## Komendy Minecraft
 
-- `/report <gracz> <powod>` - zgloszenie gracza na Discord.
-- `/link` - generuje kod do polaczenia konta Minecraft z Discord.
-- `/discordintegration reload` - przeladowanie pluginu i restart polaczenia bota.
-- `/discordintegration past token <token>` - zapis tokenu do configu.
-- `/discordintegration past log <channelId>` - zapis kanalu logow.
-- `/discordintegration past report <channelId>` - zapis kanalu reportow.
-- `/discordintegration health` - health-check runtime (JDA, timery, kanal logow, debug).
+| Komenda | Uprawnienie | Działanie |
+| --- | --- | --- |
+| `/report <gracz> <powód>` | `serverintegrationwithdicord.report` | Wysyła zgłoszenie na Discord. |
+| `/link` | `serverintegrationwithdicord.link` | Generuje jednorazowy kod połączenia kont. |
+| `/discordintegration reload` | `serverintegrationwithdicord.admin` | Przeładowuje config, język, Vault i połączenie JDA. |
+| `/discordintegration health` | `serverintegrationwithdicord.admin` | Pokazuje stan JDA, kanałów, zadań i Vault. |
+| `/discordintegration set token <token>` | `serverintegrationwithdicord.admin` | Zapisuje token i restartuje integrację. |
+| `/discordintegration set guild <guildId>` | `serverintegrationwithdicord.admin` | Ustawia serwer Discord. |
+| `/discordintegration set log <channelId>` | `serverintegrationwithdicord.admin` | Ustawia kanał logów. |
+| `/discordintegration set report <channelId>` | `serverintegrationwithdicord.admin` | Ustawia kanał zgłoszeń. |
 
-## Komendy Discord (slash)
+Dla zgodności z poprzednią wersją słowo `past` nadal działa jako alias `set`.
 
-- `/playtime <nick>` - pokazuje czas gry wskazanego gracza.
-- `/link <kod>` - laczy konto Discord z kontem Minecraft.
-- `/playtimetop` - top 5 graczy z najwiekszym playtime.
-- `/money` - stan konta gracza (wymaga Vault i polaczonego konta).
+Uprawnienie administratora domyślnie otrzymują tylko operatorzy. `/report` i `/link` są domyślnie dostępne dla graczy.
 
-Uwaga: nazwa komendy `/playtime` jest konfigurowalna przez plik jezykowy (`discord_playtime`).
+## Komendy Discord
+
+| Komenda | Działanie |
+| --- | --- |
+| `/playtime <nick>` | Pokazuje czas gry wskazanego gracza. |
+| `/playtimetop` | Pokazuje pięciu graczy z największym playtime. |
+| `/link <kod>` | Łączy konto Discord z Minecraftem. |
+| `/money` | Pokazuje saldo połączonego konta; rejestruje się tylko z działającym Vault. |
+
+Slash-commandy są rejestrowane wyłącznie na serwerze wskazanym w `guildID`, dlatego po uruchomieniu pojawiają się bez oczekiwania na propagację komend globalnych.
+
+## Ważniejsze opcje config.yml
+
+```yml
+link_code_ttl_minutes: 10
+report_cooldown_seconds: 30
+
+command_log:
+  enabled: true
+  excluded_commands:
+    - login
+    - register
+    - discordintegration
+
+discordadmininteraction: false
+admindiscordid: []
+
+flag: false
+flagwords:
+  - "przykładowe niedozwolone słowo"
+```
+
+Jeżeli włączysz `discordadmininteraction`, dodaj do `admindiscordid` ID ról, które mogą używać przycisków ban/kick. Pusta lista nie daje dostępu nikomu.
 
 ## Health-check i debug
-
-Nowa komenda admina:
 
 ```text
 /discordintegration health
 ```
 
-Pokazuje m.in.:
+Health-check pokazuje:
 
-- status JDA,
-- status timerow pluginu,
-- czy ID kanalu logow jest ustawione i osiagalne,
-- czy wlaczony jest tryb `debug`.
+- stan JDA;
+- konfigurację i dostępność serwera Discord;
+- dostępność kanałów logów i zgłoszeń;
+- stan zadania aktualizacji statusu i licznika playtime;
+- stan Vault;
+- liczbę aktywnych kodów linkowania;
+- tryb debug.
 
-Aby uzyskac dodatkowe logi diagnostyczne w konsoli, ustaw w `config.yml`:
+W razie problemów ustaw:
 
 ```yml
 debug: true
 ```
 
-## Jezyki
+Następnie wykonaj `/discordintegration reload` i sprawdź konsolę.
 
-Aktualnie plugin wspiera:
+## Pliki danych
 
-- `pl-PL`
-- `en-US`
-
-Zmiane jezyka wykonasz przez pole `language` w `config.yml`.
+- `playtime.yml` — naliczony czas graczy w minutach;
+- `link/players.yml` — trwałe powiązania kont;
+- `lang/pl-PL.yml` i `lang/en-US.yml` — teksty pluginu.
 
 ## Kontakt
 
 - Discord autora: `karpik122`
-- Serwer Discord: [Server Discord](https://discord.gg/Rzq3fHXPAs)
+- [Serwer Discord](https://discord.gg/Rzq3fHXPAs)

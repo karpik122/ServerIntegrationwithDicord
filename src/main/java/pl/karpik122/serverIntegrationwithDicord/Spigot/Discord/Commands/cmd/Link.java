@@ -8,7 +8,6 @@ import pl.karpik122.serverIntegrationwithDicord.Spigot.Discord.Commands.ICommand
 import pl.karpik122.serverIntegrationwithDicord.Spigot.File.Economy;
 import pl.karpik122.serverIntegrationwithDicord.Spigot.File.LanguageLoader;
 import pl.karpik122.serverIntegrationwithDicord.Spigot.File.LanguageManager;
-import pl.karpik122.serverIntegrationwithDicord.Spigot.MainSpigot;
 
 import java.util.List;
 import java.util.UUID;
@@ -16,8 +15,7 @@ import java.util.UUID;
 public class Link implements ICommand {
     private final LanguageLoader languageLoader;
 
-    public Link(MainSpigot plugin) {
-        new Economy(plugin);
+    public Link() {
         languageLoader = LanguageManager.getInstance();
     }
 
@@ -27,8 +25,8 @@ public class Link implements ICommand {
     }
 
     @Override
-    public String getDiscretion() {
-        return "Łączy konto Discord z kontem Minecraft";
+    public String getDescription() {
+        return languageLoader.getTranslation("description_link");
     }
 
     @Override
@@ -38,24 +36,19 @@ public class Link implements ICommand {
 
     @Override
     public void execute(SlashCommandInteractionEvent event) {
-        String kod = event.getOption("kod").getAsString();
+        String kod = event.getOption("kod") == null ? "" : event.getOption("kod").getAsString();
+        UUID graczUUID = AccountLink.consumeCode(kod);
 
-        // Sprawdza, czy kod jest na liście z poprzedniej komendy
-        if (AccountLink.pendingCodes.containsKey(kod)) {
-            UUID graczUUID = AccountLink.pendingCodes.get(kod);
+        if (graczUUID != null) {
             String discordID = event.getUser().getId();
 
-            Economy.setPlayersLink(graczUUID, discordID);
-
-
-
-            // Usuwa zużyty kod
-            AccountLink.pendingCodes.remove(kod);
-
-            event.reply(languageLoader.getTranslation("connect_account")).queue();
+            if (Economy.setPlayersLink(graczUUID, discordID)) {
+                event.reply(languageLoader.getTranslation("connect_account")).setEphemeral(true).queue();
+            } else {
+                event.reply(languageLoader.getTranslation("error_connect_account")).setEphemeral(true).queue();
+            }
         } else {
-            // Ukryta wiadomość błędu (tylko dla gracza wpisującego)
-            event.reply(languageLoader.getTranslation("error_connect_account")).setEphemeral(true).queue();
+            event.reply(languageLoader.getTranslation("link_code_expired")).setEphemeral(true).queue();
         }
     }
 }

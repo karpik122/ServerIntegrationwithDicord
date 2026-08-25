@@ -1,11 +1,10 @@
 package pl.karpik122.serverIntegrationwithDicord.Spigot.Discord.Event;
 
-import lombok.Getter;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,41 +16,45 @@ import pl.karpik122.serverIntegrationwithDicord.Spigot.MainSpigot;
 import java.awt.*;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Locale;
 import java.util.List;
+import java.util.Locale;
 
 import static pl.karpik122.serverIntegrationwithDicord.Spigot.MainSpigot.jda;
 
-public class ChatFlagWords extends ListenerAdapter implements Listener {
+public class ChatFlagWords implements Listener {
     private final MainSpigot pl;
     private final LanguageLoader languageLoader;
 
-    @Getter
-    private List<String> flaggedWords = new ArrayList<>();
-    private List<String> normalizedFlaggedWords = new ArrayList<>();
+    private volatile List<String> flaggedWords = List.of();
+    private volatile List<String> normalizedFlaggedWords = List.of();
 
     public ChatFlagWords(MainSpigot pl) {
         this.pl = pl;
         languageLoader = LanguageManager.getInstance();
 
-        // 1. POPRAWKA: Wczytujemy słowa z configu od razu przy uruchomieniu!
         loadWords();
     }
 
     @EventHandler
     public void onChat(AsyncPlayerChatEvent event) {
-        String message = event.getMessage();
-        Player playerName = event.getPlayer();
-        String normalizedMessage = message.toLowerCase(Locale.ROOT);
-
-        if (flaggedWords.isEmpty()) {
+        if (!pl.getConfig().getBoolean("flag", false)) {
             return;
         }
 
-        for (int i = 0; i < normalizedFlaggedWords.size(); i++) {
-            String normalizedWord = normalizedFlaggedWords.get(i);
+        String message = event.getMessage();
+        Player playerName = event.getPlayer();
+        String normalizedMessage = message.toLowerCase(Locale.ROOT);
+        List<String> currentWords = flaggedWords;
+        List<String> currentNormalizedWords = normalizedFlaggedWords;
+
+        if (currentWords.isEmpty()) {
+            return;
+        }
+
+        for (int i = 0; i < currentNormalizedWords.size(); i++) {
+            String normalizedWord = currentNormalizedWords.get(i);
             if (normalizedMessage.contains(normalizedWord)) {
-                sendDiscordEmbed(playerName, message, flaggedWords.get(i));
+                sendDiscordEmbed(playerName, message, currentWords.get(i));
                 break;
             }
         }
@@ -61,17 +64,21 @@ public class ChatFlagWords extends ListenerAdapter implements Listener {
         String notification_from = languageLoader.getTranslation("notification_from");
         String channelId = pl.getConfig().getString("id_log_channel");
 
-        if (channelId == null || channelId.isBlank() || jda == null) {
+        JDA currentJda = jda;
+        if (channelId == null || channelId.isBlank() || currentJda == null
+                || currentJda.getStatus() != JDA.Status.CONNECTED) {
             return;
         }
 
-        TextChannel reportChannel = jda.getTextChannelById(channelId);
+        TextChannel reportChannel = currentJda.getTextChannelById(channelId);
+        String guildId = pl.normalizedConfigValue("guildID");
 
         String playerName = player.getName();
 
-        if (reportChannel != null) {
+        if (reportChannel != null && reportChannel.canTalk()
+                && reportChannel.getGuild().getId().equals(guildId)) {
             EmbedBuilder emb = new EmbedBuilder();
-            emb.setTitle(languageLoader.getTranslation("flag"));
+            emb.setTitle(languageLoader.getTranslation("found"));
             emb.setColor(Color.RED);
             emb.setThumbnail("https://minotar.net/helm/" + player.getName() + "/300.png");
             emb.addField(languageLoader.getTranslation("commandlog_player"), player.getName(), true);
@@ -85,24 +92,32 @@ public class ChatFlagWords extends ListenerAdapter implements Listener {
                                 Button.danger("ban:" + playerName, "Ban " + playerName),
                                 Button.primary("kick:" + playerName, "Kick " + playerName)
                         )
-                ).queue();
+                ).queue(ignored -> {
+                }, error -> pl.debugLog("Could not send flagged-word alert: " + error.getMessage()));
             } else {
-                reportChannel.sendMessageEmbeds(emb.build()).queue();
+                reportChannel.sendMessageEmbeds(emb.build()).queue(
+                        ignored -> {
+                        },
+                        error -> pl.debugLog("Could not send flagged-word alert: " + error.getMessage())
+                );
             }
         }
     }
 
-    public void loadWords() {
-        flaggedWords = pl.getConfig().getStringList("flagwords");
-        normalizedFlaggedWords = new ArrayList<>(flaggedWords.size());
-        for (String word : flaggedWords) {
-            normalizedFlaggedWords.add(word.toLowerCase(Locale.ROOT));
+    private void loadWords() {
+        List<String> loadedWords = pl.getConfig().getStringList("flagwords").stream()
+                .map(String::trim)
+                .filter(word -> !word.isBlank())
+                .toList();
+        List<String> normalized = new ArrayList<>(loadedWords.size());
+        for (String word : loadedWords) {
+            normalized.add(word.toLowerCase(Locale.ROOT));
         }
+        flaggedWords = List.copyOf(loadedWords);
+        normalizedFlaggedWords = List.copyOf(normalized);
     }
 
     public void reloadWords() {
-        flaggedWords.clear();
-        normalizedFlaggedWords.clear();
         loadWords();
     }
 }

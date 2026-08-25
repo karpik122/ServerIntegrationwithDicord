@@ -1,10 +1,10 @@
 package pl.karpik122.serverIntegrationwithDicord.Spigot.Commands;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -18,95 +18,150 @@ import pl.karpik122.serverIntegrationwithDicord.Spigot.File.LanguageLoader;
 import pl.karpik122.serverIntegrationwithDicord.Spigot.File.LanguageManager;
 import pl.karpik122.serverIntegrationwithDicord.Spigot.MainSpigot;
 
-import java.awt.*;
+import java.awt.Color;
 import java.time.Instant;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
-import static pl.karpik122.serverIntegrationwithDicord.Spigot.MainSpigot.jda;
-
-public class Reports extends ListenerAdapter implements CommandExecutor {
+public class Reports implements CommandExecutor {
     private final MainSpigot plugin;
     private final LanguageLoader languageLoader;
+    private final Map<UUID, Long> cooldowns = new ConcurrentHashMap<>();
 
-    public Reports(MainSpigot pl) {
-        this.plugin = pl;
-        languageLoader = LanguageManager.getInstance();
+    public Reports(MainSpigot plugin) {
+        this.plugin = plugin;
+        this.languageLoader = LanguageManager.getInstance();
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        String report = plugin.getConfig().getString("report_channel");
-
-        String there_is_no_such_player = languageLoader.getTranslation("there_is_no_such_player");
-        String report_report = languageLoader.getTranslation("report_report");
-        String report_applicant = languageLoader.getTranslation("report_applicant");
-        String report_notified = languageLoader.getTranslation("report_notified");
-        String notification_from = languageLoader.getTranslation("notification_from");
-        String report_correct_usage = languageLoader.getTranslation("report_correct_usage");
-        String report_reason = languageLoader.getTranslation("report_reason");
-        String report_successfully = languageLoader.getTranslation("report_successfully");
-
-        Player p = (Player) sender;
-
-        if (args.length > 1) {
-            Player reported = Bukkit.getPlayer(args[0]);
-
-            // Poprawne sprawdzanie, czy gracz istnieje (zamiast try-catch i assert)
-            if (reported == null) {
-                p.sendMessage(ChatColor.RED + there_is_no_such_player);
-                return true;
-            }
-
-            String playerName = reported.getName();
-            StringBuilder content = new StringBuilder();
-
-            for (int i = 1; i < args.length; i++) {
-                content.append(" ").append(args[i]);
-            }
-
-            report_successfully = report_successfully.replace("{player}", playerName);
-            report_successfully = report_successfully.replace("{reason}", content.toString());
-
-            // 1. Wiadomość dla zgłaszającego
-            p.sendMessage(ChatColor.GREEN + report_successfully);
-
-            // 2. Wiadomość i dźwięk dla OPów
-            String finalReport_successfully = report_successfully;
-            Bukkit.getOnlinePlayers().stream().filter(ServerOperator::isOp).forEach(ops -> {
-                ops.playSound(ops.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0f, 0f);
-                // Sprawdzamy, czy OP nie jest osobą, która zgłasza
-                if (!ops.equals(p)) {
-                    ops.sendMessage(ChatColor.GREEN + finalReport_successfully);
-                }
-            });
-
-            // 3. Wysłanie na Discord
-            if (jda != null && report != null) {
-                TextChannel reportChannel = jda.getTextChannelById(report);
-                if (reportChannel != null) {
-                    EmbedBuilder emb = new EmbedBuilder();
-                    emb.setAuthor(report_report, null, "https://minotar.net/helm/" + p.getName() + "/300.png");
-                    emb.setThumbnail("https://minotar.net/helm/" + reported.getName() + "/300.png");
-                    emb.addField(report_applicant, p.getName(), true);
-                    emb.addField(report_notified, reported.getName(), true);
-                    emb.addField(report_reason, content.toString(), false);
-                    emb.setColor(Color.YELLOW);
-                    emb.setFooter(notification_from);
-                    emb.setTimestamp(Instant.now());
-
-                    if (plugin.getConfig().getBoolean("discordadmininteraction")) {
-                        reportChannel.sendMessageEmbeds(emb.build()).addComponents(ActionRow.of(
-                                        Button.danger("ban:" + playerName, "Ban " + playerName),
-                                        Button.primary("kick:" + playerName, "Kick " + playerName)
-                                )
-                        ).queue();
-                    } else {
-                        reportChannel.sendMessageEmbeds(emb.build()).queue();
-                    }
-                }
-            }
-        } else {
-            p.sendMessage(ChatColor.RED + report_correct_usage);
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command,
+                             @NotNull String label, @NotNull String[] args) {
+        if (!(sender instanceof Player reporter)) {
+            sender.sendMessage(languageLoader.getTranslation("only_player"));
+            return true;
         }
+
+        if (args.length < 2) {
+            reporter.sendMessage(ChatColor.RED + languageLoader.getTranslation("report_correct_usage"));
+            return true;
+        }
+
+        long remainingSeconds = getRemainingCooldownSeconds(reporter.getUniqueId());
+        if (remainingSeconds > 0) {
+            reporter.sendMessage(ChatColor.RED + languageLoader.getTranslation("report_cooldown")
+                    .replace("{seconds}", String.valueOf(remainingSeconds)));
+            return true;
+        }
+
+        Player reported = Bukkit.getPlayerExact(args[0]);
+        if (reported == null) {
+            reporter.sendMessage(ChatColor.RED + languageLoader.getTranslation("there_is_no_such_player"));
+            return true;
+        }
+
+        JDA currentJda = MainSpigot.jda;
+        TextChannel reportChannel = findReportChannel(currentJda);
+        if (currentJda == null || currentJda.getStatus() != JDA.Status.CONNECTED
+                || reportChannel == null || !reportChannel.canTalk()) {
+            reporter.sendMessage(ChatColor.RED + languageLoader.getTranslation("report_unavailable"));
+            return true;
+        }
+
+        String reason = String.join(" ", Arrays.copyOfRange(args, 1, args.length)).trim();
+        EmbedBuilder embed = new EmbedBuilder()
+                .setAuthor(languageLoader.getTranslation("report_report"), null,
+                        "https://minotar.net/helm/" + reporter.getName() + "/300.png")
+                .setThumbnail("https://minotar.net/helm/" + reported.getName() + "/300.png")
+                .addField(languageLoader.getTranslation("report_applicant"), reporter.getName(), true)
+                .addField(languageLoader.getTranslation("report_notified"), reported.getName(), true)
+                .addField(languageLoader.getTranslation("report_reason"), reason, false)
+                .setColor(Color.YELLOW)
+                .setFooter(languageLoader.getTranslation("notification_from"))
+                .setTimestamp(Instant.now());
+
+        var sendAction = reportChannel.sendMessageEmbeds(embed.build());
+        if (plugin.getConfig().getBoolean("discordadmininteraction")) {
+            sendAction = sendAction.addComponents(ActionRow.of(
+                    Button.danger("ban:" + reported.getName(), "Ban " + reported.getName()),
+                    Button.primary("kick:" + reported.getName(), "Kick " + reported.getName())
+            ));
+        }
+
+        long cooldownSeconds = Math.clamp(
+                plugin.getConfig().getLong("report_cooldown_seconds", 30L),
+                0L,
+                3600L
+        );
+        if (cooldownSeconds > 0) {
+            cooldowns.put(reporter.getUniqueId(), System.currentTimeMillis() + cooldownSeconds * 1000L);
+        }
+
+        sendAction.queue(
+                ignored -> Bukkit.getScheduler().runTask(plugin,
+                        () -> notifySuccessfulReport(reporter, reported, reason)),
+                error -> {
+                    cooldowns.remove(reporter.getUniqueId());
+                    plugin.getLogger().warning("Could not send player report to Discord: " + error.getMessage());
+                    Bukkit.getScheduler().runTask(plugin, () -> {
+                        if (reporter.isOnline()) {
+                            reporter.sendMessage(ChatColor.RED
+                                    + languageLoader.getTranslation("report_send_failed"));
+                        }
+                    });
+                }
+        );
         return true;
+    }
+
+    private TextChannel findReportChannel(JDA currentJda) {
+        if (currentJda == null) {
+            return null;
+        }
+
+        String channelId = plugin.normalizedConfigValue("report_channel");
+        String guildId = plugin.normalizedConfigValue("guildID");
+        if (channelId.isBlank() || guildId.isBlank()) {
+            return null;
+        }
+
+        TextChannel channel = currentJda.getTextChannelById(channelId);
+        if (channel == null || !channel.getGuild().getId().equals(guildId)) {
+            return null;
+        }
+        return channel;
+    }
+
+    private void notifySuccessfulReport(Player reporter, Player reported, String reason) {
+        String success = languageLoader.getTranslation("report_successfully")
+                .replace("{player}", reported.getName())
+                .replace("{reason}", reason);
+
+        if (reporter.isOnline()) {
+            reporter.sendMessage(ChatColor.GREEN + success);
+        }
+
+        Bukkit.getOnlinePlayers().stream()
+                .filter(ServerOperator::isOp)
+                .filter(operator -> !operator.equals(reporter))
+                .forEach(operator -> {
+                    operator.playSound(operator.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
+                    operator.sendMessage(ChatColor.GREEN + success);
+                });
+    }
+
+    private long getRemainingCooldownSeconds(UUID playerId) {
+        Long expiresAt = cooldowns.get(playerId);
+        if (expiresAt == null) {
+            return 0L;
+        }
+
+        long remainingMillis = expiresAt - System.currentTimeMillis();
+        if (remainingMillis <= 0) {
+            cooldowns.remove(playerId);
+            return 0L;
+        }
+        return (remainingMillis + 999L) / 1000L;
     }
 }

@@ -1,7 +1,5 @@
 package pl.karpik122.serverIntegrationwithDicord.Spigot.Util;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import org.bukkit.Bukkit;
 import pl.karpik122.serverIntegrationwithDicord.Spigot.File.LanguageLoader;
 import pl.karpik122.serverIntegrationwithDicord.Spigot.File.LanguageManager;
@@ -10,6 +8,7 @@ import pl.karpik122.serverIntegrationwithDicord.Spigot.MainSpigot;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URI;
 import java.util.Scanner;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
@@ -31,7 +30,8 @@ public class UpdateChecker {
 
         Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
             try {
-                URL url = new URL("https://api.cfwidget.com/minecraft/bukkit-plugins/server-integration-with-discord");
+                URL url = URI.create("https://api.cfwidget.com/minecraft/bukkit-plugins/server-integration-with-discord")
+                        .toURL();
 
                 try (InputStream is = url.openStream(); Scanner scann = new Scanner(is)) {
                     StringBuilder jsonText = new StringBuilder();
@@ -39,9 +39,12 @@ public class UpdateChecker {
                         jsonText.append(scann.nextLine());
                     }
 
-                    // Odczytanie pełnej nazwy z CurseForge
-                    JsonObject json = JsonParser.parseString(jsonText.toString()).getAsJsonObject();
-                    String rawVersion = json.getAsJsonObject("download").get("version").getAsString();
+                    Matcher versionField = Pattern.compile("\\\"version\\\"\\s*:\\s*\\\"([^\\\"]+)\\\"")
+                            .matcher(jsonText);
+                    if (!versionField.find()) {
+                        throw new IOException("Version field is missing in the update response");
+                    }
+                    String rawVersion = versionField.group(1);
 
                     // Wyciąganie samego numeru wersji (np. z "Plugin-1.1.jar" robi "1.1")
                     Matcher matcher = Pattern.compile("(\\d+\\.\\d+(?:\\.\\d+)?)").matcher(rawVersion);

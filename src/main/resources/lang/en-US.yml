@@ -6,6 +6,10 @@ report_notified: "Reported"
 report_reason: "Content of the notification"
 there_is_no_such_player: "There is no such player."
 report_correct_usage: "Not using the command correctly (/report {player} {reason})."
+report_unavailable: "Discord integration is currently unavailable. Please contact an administrator."
+report_send_failed: "The report could not be sent to Discord. Please try again later."
+report_cooldown: "Wait another {seconds} seconds before sending another report."
+only_player: "Only a player can use this command."
 
 #Admin Command
 admin_command_help: "Correct use of commands:"
@@ -15,7 +19,10 @@ admin_command_past_log: "/discordintegration past log {discord channel ID} - Pas
 admin_command_past_report: "/discordintegration past report {discord channel ID} - Pastes the channel Id for the players report into the Config.yml file."
 admin_command_health: "/discordintegration health - Displays runtime diagnostics (JDA, timers, log channel)."
 remember_to_restart: "Remember to restart the plugin."
-admin_command_accept: "Corrected changed."
+admin_command_accept: "Configuration saved and the integration restarted."
+admin_command_invalid_id: "The supplied Discord ID is invalid."
+admin_command_missing_value: "A value is missing. Check the command syntax."
+no_permission: "You do not have permission to use this command."
 
 #Logs
 commandlog_use_log: "Log of command usage"
@@ -30,6 +37,8 @@ there_is_not_a_new_update: "There is no new version of the plugin at the moment.
 there_is_a_new_update: "A new version of the plugin is available."
 Log_in_for: "Logged in as {botName} ({botID})."
 error_token: "The token was not entered correctly or this is the first installation of the plugin!"
+guild_not_found: "The bot cannot find the configured Discord server. Check guildID and the bot invitation."
+log_channel_not_found: "The bot cannot find the log channel or does not have access to it."
 
 #Playtime
 playtime_minutes_on_server: "**{player} plays {minutes} min. on the server."
@@ -45,24 +54,29 @@ playtime_description: "top 5 players with the most time spent"
 playtime_top5: "Top 5 Playtime"
 playtime_h: "hours"
 playtime_min: "minutes"
+playtime_empty: "No player has recorded playtime yet."
 
 #Account
 account_link: "§aYour account linking code is: §e§n"
 copy_link: "§7Click to copy!"
 use_in_discord: "§aUse it on our Discord server!"
+link_code_expired: "Invalid or expired code. Generate a new one in-game with /link."
 
 
 #Discord
 discord_status: "{player_count} graczy na serwerze."
-notification_from: "SIwD - karpik122#0000."
+notification_from: "Server Integration with Discord · karpik122"
 im_connecting: "Hey, I'm already connected to the server. \uD83D\uDD0C"
 connect_account: "Accounts have been successfully linked!"
 error_connect_account: "Incorrect code! Generate a new one in-game using /link"
+discord_command_error: "An error occurred while executing the command. Please try again later."
 isnt_connectet_discord: "Your account is not linked! Use the /link command in Minecraft."
 
 have_in_account: "You have in your account: "
 description_money: "Shows the game account balance"
-code_generate: "Kod wygenerowany w grze"
+code_generate: "Code generated in-game"
+description_link: "Links a Discord account to a Minecraft account"
+economy_unavailable: "Economy is currently unavailable. Vault and an economy plugin are required."
 
 #Flag word
 found: "⚠️ Forbidden word detected!"

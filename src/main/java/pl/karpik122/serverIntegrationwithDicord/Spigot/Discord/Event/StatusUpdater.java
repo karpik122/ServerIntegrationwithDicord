@@ -1,7 +1,5 @@
 package pl.karpik122.serverIntegrationwithDicord.Spigot.Discord.Event;
 
-import java.util.TimerTask;
-
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
@@ -10,16 +8,23 @@ import pl.karpik122.serverIntegrationwithDicord.Spigot.File.LanguageLoader;
 import pl.karpik122.serverIntegrationwithDicord.Spigot.File.LanguageManager;
 import pl.karpik122.serverIntegrationwithDicord.Spigot.MainSpigot;
 
-public class StatusUpdater extends TimerTask {
-    JDA jda = MainSpigot.jda;
+public class StatusUpdater implements Runnable {
+    private final JDA jda;
     private final LanguageLoader languageLoader;
-    public MainSpigot plugin;
-    public StatusUpdater(MainSpigot pl) {
-        this.plugin = pl;
+    private final MainSpigot plugin;
+
+    public StatusUpdater(MainSpigot plugin, JDA jda) {
+        this.plugin = plugin;
+        this.jda = jda;
         languageLoader = LanguageManager.getInstance();
     }
 
+    @Override
     public void run() {
+        if (MainSpigot.jda != jda || jda.getStatus() != JDA.Status.CONNECTED) {
+            return;
+        }
+
         String discord_status = languageLoader.getTranslation("discord_status");
 
         int pn = Bukkit.getServer().getOnlinePlayers().size();
@@ -33,7 +38,11 @@ public class StatusUpdater extends TimerTask {
         }
 
         discord_status = discord_status.replace("{player_count}", String.valueOf(pn));
+        if (discord_status.length() > 128) {
+            discord_status = discord_status.substring(0, 128);
+        }
 
         jda.getPresence().setActivity(Activity.watching(discord_status));
+        plugin.debugLog("Updated Discord presence (online players: " + pn + ")");
     }
 }
