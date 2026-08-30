@@ -28,31 +28,6 @@ JAR nie zawiera JDA, dzięki czemu pozostaje bardzo mały. Przy pierwszym
 uruchomieniu Paper/Spigot odczyta sekcję `libraries` z `plugin.yml` i pobierze
 JDA 6.4.1 z Maven Central. Serwer musi wtedy mieć dostęp do internetu.
 
-## Budowanie
-
-Projekt zawiera kompletny Gradle Wrapper dla Windows, Linux i macOS.
-
-Linux/macOS:
-
-```bash
-./gradlew clean build
-```
-
-Windows PowerShell:
-
-```powershell
-.\gradlew.bat clean build
-```
-
-Gotowy plik powstaje tutaj:
-
-```text
-build/libs/sdj-1.9.jar
-```
-
-Skopiuj wygenerowany plik JAR do katalogu `plugins` serwera. Nie dodawaj osobnego
-pliku JDA do katalogu `plugins`.
-
 ## Konfiguracja bota Discord
 
 1. Utwórz aplikację i bota w Discord Developer Portal.
